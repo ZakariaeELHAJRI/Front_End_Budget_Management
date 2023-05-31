@@ -71,6 +71,10 @@ const ExpenseForm = ({ group, users }) => {
     setPaidBy('');
     setProducts([]);
   };
+  handelCancelCategory = () => {  
+    setSelectedCategory(null);
+    setShowProductModal(false);
+    };
 const handleBackToCategory = () => {
     setSelectedCategory(null);
     //setShowProductModal(false);
@@ -78,10 +82,10 @@ const handleBackToCategory = () => {
   return (
     <View>
       <Text>Description:</Text>
-      <TextInput value={description} onChangeText={(text) => setDescription(text)} />
+      <TextInput style={styles.input} value={description} onChangeText={(text) => setDescription(text)} />
 
       <Text>Amount:</Text>
-      <TextInput
+      <TextInput style={styles.input}
         value={amount}
         onChangeText={(text) => setAmount(text)}
         keyboardType="numeric"
@@ -100,9 +104,13 @@ const handleBackToCategory = () => {
       {products.map((product) => (
         <Text key={product._id}>{product.name}</Text>
       ))}
-      <Button title="Add Product" onPress={handleAddProduct} />
+      <TouchableOpacity onPress={handleAddProduct}  style={styles.btnModel}>
+      <Text style={styles.btnModelText}>Add Product</Text>
+      </TouchableOpacity>
 
-      <Button onPress={handleSubmit} title="Add Expense" />
+        <TouchableOpacity onPress={handleSubmit}  style={styles.btnModel}>
+        <Text style={styles.btnModelText}>Add Expences</Text>
+      </TouchableOpacity>
 
       <Modal visible={showProductModal} transparent>
       <View style={styles.modalContainer}>
@@ -122,14 +130,18 @@ const handleBackToCategory = () => {
                     <Text>{category.title}</Text>
                   </TouchableOpacity>
                 ))}
+                  <TouchableOpacity onPress={handelCancelCategory}  style={styles.btnModel}>
+                <Text style={styles.btnModelText}>Cancel</Text>
+              </TouchableOpacity>
               </View>
             ) : (
         <View>
           <Text>Product Name:</Text>
-          <TextInput value={productName} onChangeText={(text) => setProductName(text)} />
+          <TextInput style={styles.input} value={productName} onChangeText={(text) => setProductName(text)} />
           {console.log('product is ', products)}
           <Text>Product Price:</Text>
           <TextInput
+          style={styles.input}
             value={productPrice}
             onChangeText={(text) => setProductPrice(text)}
             keyboardType="numeric"
@@ -160,10 +172,16 @@ const handleBackToCategory = () => {
               />
             );
           })}
-
-            <Button title="Add Product" onPress={handleAddProductSubmit} />
-          <Button title="Back to Categorys" onPress={handleBackToCategory} />
-          <Button title="Finish" onPress={() => setShowProductModal(false)} />
+       <TouchableOpacity onPress={handleAddProductSubmit}  style={styles.btnModel}>
+      <Text style={styles.btnModelText}>Add Product</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleBackToCategory}  style={styles.btnModel}>
+      <Text style={styles.btnModelText}>Back to Categorys</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setShowProductModal(false)} style={styles.btnModel}>
+      <Text style={styles.btnModelText}>Finish</Text>
+      </TouchableOpacity>
+          
         </View>
         )}
         </View>
