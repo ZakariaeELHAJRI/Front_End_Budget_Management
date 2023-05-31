@@ -26,10 +26,12 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}> 
     <View style = {styles.header}>
-    <Ionicons name="md-person-circle-sharp" size={40} color="white" />
+     <TouchableOpacity>
+     <SimpleLineIcons name="menu" size={30} color="black" />
+    </TouchableOpacity>
     <Text style = {styles.headerText}></Text>
     <TouchableOpacity>
-      <SimpleLineIcons name="options-vertical" size={24} color="white" />
+    <Ionicons name="md-person-circle-sharp" size={40} color="#FFCA27" />
     </TouchableOpacity>
     </View>
 
@@ -46,14 +48,14 @@ const HomeScreen = () => {
     </View>
     <View style = {styles.cardIncome}>
       {/* image  profile*/}
-      <Feather style={styles.FontAwesome} name="arrow-up-circle" size={35} color="white" />
+      <Feather style={styles.FontAwesome} name="arrow-up-circle" size={35} color="#212A37" />
       <View style = {styles.details}>
       <Text style = {styles.IncomeTitle}>Income</Text>
       <Text style = {styles.IncomeAmount}>$64.00</Text>
       </View>
       <View style = {styles.dashVertical}>
       </View>
-      <Feather style={styles.FontAwesome} name="arrow-down-circle" size={35} color="white" />
+      <Feather style={styles.FontAwesome} name="arrow-down-circle" size={35} color="#212A37" />
     <View style = {styles.details}>
     <Text style = {styles.IncomeTitle}>Expenses</Text>
     <Text style = {styles.IncomeAmount}>$54.00</Text>
@@ -109,19 +111,19 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#02457a', // #1e1d2d
+    backgroundColor: '#FBF9F7', // #1e1d2d
     height: 60,
     justifyContent: 'space-between',
     padding: 10,
   },
   headerText: {
     fontSize: 20,
-    color: '#fff',
+    color: '#212A37',
     fontWeight: 'bold',
   },
   body: {
     flex: 1,
-    backgroundColor: '#02457a',
+    backgroundColor: '#FBF9F7',
     
   },
   cardProfile: {
@@ -137,15 +139,16 @@ const styles = StyleSheet.create({
    
   },
   cardProfession: {
-    color: '#fff',
+    color: '#212A37',
     fontSize: 17,
     marginTop: 10,
     fontFamily: 'sans-serif-light',
   },
   cardIncome: {
     flex : 1,
-    justifyContent: 'space-between',
-    marginHorizontal: 5,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 0,
@@ -162,13 +165,13 @@ const styles = StyleSheet.create({
     
   },
   IncomeTitle: {
-    color: '#fff',
+    color: '#212A37',
     fontSize: 15,
     marginTop: 10,
   },
   dashVertical: {
     borderStyle: 'dashed',
-    borderColor: '#fff',
+    borderColor: '#212A37',
     borderWidth: 1,
     borderRadius: 1,
     marginTop: 10,
@@ -177,7 +180,13 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   IncomeAmount: {
-    color: '#fff',
+    color: '#FF6238',
+    fontSize: 19,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+    IncomeAmount: {
+    color: '#FF6238',
     fontSize: 19,
     fontWeight: 'bold',
     marginTop: 5,
@@ -185,23 +194,23 @@ const styles = StyleSheet.create({
   cardBalance: {
     marginTop: 20,
     flex : 1,
-    marginHorizontal:15,
+    marginHorizontal:20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
     width: 360,
     height: 150,
-    shadowColor: '#d6ebee',
+    shadowColor: '#FFCA27',
    borderTopRightRadius: 20,
    borderBottomLeftRadius: 20,
-    backgroundColor: '#d6ebee', // Transparent background
+    backgroundColor: '#FFCA27', // Transparent background
     backdropFilter: 'blur(15px)', // Glass effect
     zIndex: 1, // To make it appear above the background image
   },
   details: {
     alignItems: 'flex-start',
-    marginLeft: 20,
+    marginLeft: 10,
 
   },
   img: {
@@ -212,7 +221,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   cardText: {
-    color: '#fff',
+    color: '#212A37',
     fontSize: 30,
     fontWeight: 'bold',
     marginTop: 10,
@@ -243,7 +252,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     color: '#e41e95',
-    backgroundColor: '#e15ec385',
+    backgroundColor: '#FBF9F7',
     borderRadius: 10,
     padding: 5,
   },
@@ -266,7 +275,7 @@ const styles = StyleSheet.create({
   ButtomBG: {
     flex: 4,
     marginTop: 20,
-    backgroundColor: '#d6ebee', //#97cadb 
+    backgroundColor: '#ffca273d', //#97cadb 
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     shadowColor: "#000",
@@ -290,7 +299,7 @@ const styles = StyleSheet.create({
             height: 10,
           },
        marginBottom: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#FBF9F7',
     
      },
      expenseInfo: {

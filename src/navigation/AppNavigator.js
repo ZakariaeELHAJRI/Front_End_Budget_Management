@@ -41,7 +41,7 @@ export default function Nav() {
               <FontAwesome5
                 name="home"
                 size={24}
-                color={focused ? '#001b48' : '#748c94'}
+                color={focused ? '#FF6238' : '#748c94'}
               />
             </View>
           ),
@@ -57,7 +57,7 @@ export default function Nav() {
               <FontAwesome5
                 name="comments"
                 size={24}
-                color={focused ? '#001b48' : '#748c94'}
+                color={focused ? '#FF6238' : '#748c94'}
               />
             </View>
           ),
@@ -73,7 +73,7 @@ export default function Nav() {
               <FontAwesome5
                 name="comments"
                 size={24}
-                color={focused ? '#001b48' : '#748c94'}
+                color={focused ? '#FF6238' : '#748c94'}
               />
             </View>
           ),
@@ -89,7 +89,7 @@ export default function Nav() {
               <FontAwesome5
                 name="user-alt"
                 size={24}
-                color={focused ? '#001b48' : '#748c94'}
+                color={focused ? '#FF6238' : '#748c94'}
               />
             </View>
           ),
