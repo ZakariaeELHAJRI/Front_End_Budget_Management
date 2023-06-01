@@ -139,7 +139,8 @@ export default function ChatGroup({ navigation }) {
   const handleCancelSearch = () => {
     setSearchText("");
     setShowSearch(false);
-    setMessages([]);
+   // getdata();
+  // setMessages(messages);
   };
 
   useEffect(() => {
