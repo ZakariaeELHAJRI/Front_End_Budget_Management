@@ -2,10 +2,10 @@ import * as React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import GroupScreen from '../screens/GroupScreen';
+import GroupStack from './GroupStack';
 import ReportScreen from '../screens/ReportScreen';
-import { FontAwesome5 } from '@expo/vector-icons';
-import chatGroup from '../screens/ChatGroup';
+import { FontAwesome5,AntDesign } from '@expo/vector-icons';
+import Profile from '../screens/Profile';
 
 
 const Tab = createBottomTabNavigator();
@@ -47,9 +47,10 @@ export default function Nav() {
           ),
         }}
       />
+     
       <Tab.Screen
-        name="ChatGroup"
-        component={chatGroup}
+        name="GroupStack"
+        component={GroupStack}
         options={{
           header: () => null,
           tabBarIcon: ({ focused }) => (
@@ -62,26 +63,22 @@ export default function Nav() {
             </View>
           ),
         }}
-      />
+      /> 
       <Tab.Screen
-        name="GroupScreen"
-        component={GroupScreen}
-        options={{
-          header: () => null,
-          tabBarIcon: ({ focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <FontAwesome5
-                name="comments"
-                size={24}
-                color={focused ? '#FF6238' : '#748c94'}
-              />
-            </View>
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="ReportScreen"
+        name="repport"
         component={ReportScreen}
+        options={{
+          header: () => null,
+          tabBarIcon: ({ focused }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <AntDesign name="piechart" size={24} color={focused ? '#FF6238' : '#748c94'} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
         options={{
           header: () => null,
           tabBarIcon: ({ focused }) => (
