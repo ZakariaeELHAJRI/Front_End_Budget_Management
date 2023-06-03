@@ -4,7 +4,10 @@ import { EvilIcons ,SimpleLineIcons,AntDesign ,MaterialCommunityIcons ,MaterialI
 import { Calendar } from 'react-native-calendars';
 import TestChart from '../components/chart';
 import { FlatList } from 'react-native-gesture-handler';
-<MaterialIcons name="restaurant" size={24} color="black" />
+import { Picker } from '@react-native-picker/picker';
+import DropGroup from '../components/DropGroup';
+import DropMembres from '../components/DropMembres';
+const ReportScreen = () => {
 const expenses = [
   { id: 1, icon: 'home', name: 'Home', date: 'May 20, 2023', amount: '$50' },
   { id: 2, icon: 'car-back', name: 'Gasoil', date: 'May 19, 2023', amount: '$30' },
@@ -13,8 +16,59 @@ const expenses = [
   { id: 5, icon: 'shopping', name: 'Shopping', date: 'May 19, 2023', amount: '$80' },
   // Add more expense items as needed
 ];
+const groups= [
+  {
+    "_id": "1",
+    "name": "Group 1",
+    "balance": 1000,
+    "members": ["1", "2", "3"],
+    "expenses": ["1", "2", "3"],
+    "reimbursement": ["1"],
+    "createdAt": "2023-05-30T10:00:00.000Z",
+    "updatedAt": "2023-05-30T10:00:00.000Z"
+  },
+  {
+    "_id": "2",
+    "name": "Group 2",
+    "balance": 500,
+    "members": ["1", "3"],
+    "expenses": ["2"],
+    "reimbursement": [],
+    "createdAt": "2023-05-29T15:30:00.000Z",
+    "updatedAt": "2023-05-29T15:30:00.000Z"
+  },
+  {
+    "_id": "3",
+    "name": "Group 3",
+    "balance": 1500,
+    "members": ["2", "3"],
+    "expenses": ["1", "3"],
+    "reimbursement": ["1"],
+    "createdAt": "2023-05-28T09:45:00.000Z",
+    "updatedAt": "2023-05-28T09:45:00.000Z"
+  }
+];
 const sliceColor = ['#fdaf00', '#fd336b', '#00cdc0', '#fd336b', '#00cdc0'];
+const [selectedGroup, setSelectedGroup] = useState('');
+const handleGroupChange = (itemValue) => {
+  setSelectedGroup(itemValue);
+};
+const Component1 = () => {
+  return <Text>All </Text>;
+};
 
+const Component2 = () => {
+  return (
+   <DropGroup />
+  );
+};
+
+const Component3 = () => {
+  return (
+     <DropMembres />
+  );
+ 
+};
 const ExpenseCard = ({ icon, name, date, amount, color }) => {
   return (
     <View style={styles.card}>
@@ -32,8 +86,22 @@ const ExpenseCard = ({ icon, name, date, amount, color }) => {
     </View>
   );
 };
-const ReportScreen = () => {
+
+
+
   const [isCalendarVisible, setCalendarVisible] = useState(false);
+  const [currentComponent, setCurrentComponent] = useState(0);
+  const components = [Component1, Component2, Component3];
+
+  const handleNext = () => {
+    setCurrentComponent((prevComponent) => (prevComponent + 1) % components.length);
+  };
+
+  const handleBack = () => {
+    setCurrentComponent((prevComponent) =>prevComponent === 0 ? components.length - 1 : prevComponent - 1 );
+  };
+
+  const CurrentContent = components[currentComponent];
   const toggleCalendarVisibility = () => {
     setCalendarVisible(!isCalendarVisible);
   };
@@ -56,36 +124,45 @@ const ReportScreen = () => {
       </View>
       {/* ... */}
       <View style={styles.body}>
-           <View style={styles.dropdown}>
-        
+      <View style={styles.dropdown}>
           <View style={styles.leftHeader}>
-            <TouchableOpacity>
-            <Ionicons name="arrow-back" size={25} color="#212A37" style={styles.arrow} />
+            <TouchableOpacity onPress={handleBack}>
+              <Ionicons name="arrow-back" size={25} color="#212A37" style={styles.arrow} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.centerHeader}>
-            <Text style={styles.dropdownText}>Today</Text>
-            <TouchableOpacity onPress={toggleCalendarVisibility}>
-            <AntDesign name="calendar" size={24} color="black" />
+          <View style={styles.centerHeaderselect}>    
+          <CurrentContent style={styles.components}/>
+          </View>
+
+          <View style={styles.rightHeader}>
+            <TouchableOpacity onPress={handleNext}>
+              <Ionicons name="arrow-forward" size={25} color="#212A37" style={styles.arrow} />
             </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.dropdown}>
+        
+       
+
+        <View style={styles.centerHeader}>
+          
+          <Text style={styles.dropdownText}>Today</Text>
+          <TouchableOpacity onPress={toggleCalendarVisibility}>
+          <AntDesign name="calendar" size={24} color="black" />
+          </TouchableOpacity>
+      
+
+        {isCalendarVisible && (
+          <View style={styles.calendar}>
+            <Calendar /* Calendar component props go here */ />
+          </View>
+        )}
+     </View>
+      
         
 
-          {isCalendarVisible && (
-            <View style={styles.calendar}>
-              <Calendar /* Calendar component props go here */ />
-            </View>
-          )}
-       </View>
-          <View style={styles.rightHeader}>
-            <TouchableOpacity>
-            <Ionicons name="arrow-forward" size={25} color="#212A37" style={styles.arrow}/>
-            </TouchableOpacity>
-          </View>
-          
-
-        </View>
-
+      </View>
         <View style={styles.chart}>
         <TestChart/>
         </View>
@@ -113,12 +190,7 @@ const ReportScreen = () => {
     </View>
     
             </View>
-              
-          
-
-
-
-
+            
       </View>
     </View>
   );
@@ -137,11 +209,13 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    marginTop: 5,
+    paddingHorizontal: 10,
     alignItems: 'center',
     backgroundColor: '#FBF9F7',
-    height: '8%',
+    height: '7%',
     justifyContent: 'space-between',
-    padding: 10,
+
   },
   leftHeader: {
     flexDirection: 'row',
@@ -149,13 +223,9 @@ const styles = StyleSheet.create({
   },
   RepportTitle: {
    
-    fontSize: 25,
+    fontSize: 20,
     color: '#212A37',
     fontWeight: 'bold',
-  },
-  groupMembers: {
-    fontSize: 12,
-    color: '#fff',
   },
 
   rightHeader: {
@@ -175,7 +245,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FBF9F7',
   },
   dropdown: {
-    marginTop: 20,
+    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FBF9F7',
@@ -190,8 +260,20 @@ const styles = StyleSheet.create({
   centerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+  
     width: '30%',
     justifyContent  : 'space-between',
+  },
+  centerHeaderselect: {
+   
+   
+
+  } ,
+  components: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    left: 0,
   },
   dropdownText: {
     flexDirection: 'row',

@@ -127,10 +127,9 @@ export default function ChatGroup({ navigation }) {
     }
   ];
 
-  const handleUserChange = (user) => {
-    setSelectedUser(user);
+  const handelbackgroup = () => {
+    navigation.navigate('Group');
   };
-
   
   const handleSearchToggle = () => {
     setShowSearch(!showSearch);
@@ -143,15 +142,16 @@ export default function ChatGroup({ navigation }) {
   // setMessages(messages);
   };
 
-  useEffect(() => {
+ /* useEffect(() => {
     const hideTabBar = navigation.addListener("focus", () => {
+      console.log("focus");
       navigation.setOptions({
         tabBarStyle: { display: "none" },
       });
+     
     });
-
     return hideTabBar;
-  }, [navigation]);
+  }, [navigation]);*/
 
   const openModal = () => {
     setShowModal(true);
@@ -210,6 +210,9 @@ export default function ChatGroup({ navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftHeader}>
+        <TouchableOpacity onPress={handelbackgroup}>
+        <MaterialIcons style={styles.expenseDetails} name="keyboard-arrow-left" size={30} color="white" />
+        </TouchableOpacity>
           <Image
             style={styles.groupImage}
             source={require('../../assets/my_pic.jpeg')}

@@ -17,7 +17,7 @@ export default function Nav() {
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: 'white',
-          position: 'absolute',
+          position: 'relative', //changed from absolute to relative 02-06-2023
           bottom: 15,
           marginHorizontal: 20,
           height: 60,
@@ -35,6 +35,7 @@ export default function Nav() {
         name="HomeScreen"
         component={HomeScreen}
         options={{
+          
           header: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -51,7 +52,8 @@ export default function Nav() {
       <Tab.Screen
         name="GroupStack"
         component={GroupStack}
-        options={{
+        options={({ route }) => ({
+          
           header: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -62,12 +64,13 @@ export default function Nav() {
               />
             </View>
           ),
-        }}
+        })}
       /> 
       <Tab.Screen
         name="repport"
         component={ReportScreen}
         options={{
+         
           header: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -80,6 +83,7 @@ export default function Nav() {
         name="Profile"
         component={Profile}
         options={{
+        
           header: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
