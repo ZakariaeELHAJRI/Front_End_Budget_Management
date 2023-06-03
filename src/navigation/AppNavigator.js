@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View ,KeyboardAvoidingView, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import GroupStack from './GroupStack';
@@ -12,25 +12,29 @@ const Tab = createBottomTabNavigator();
 
 export default function Nav() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: 'white',
-          position: 'relative', //changed from absolute to relative 02-06-2023
-          bottom: 15,
-          marginHorizontal: 20,
-          height: 60,
-          borderRadius: 10,
-          shadowColor: '#000',
-          shadowOpacity: 0.9,
-          shadowOffset: {
-            width: 10,
-            height: 10,
-          },
-        },
-      }}
-    >
+    <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={{ flex: 1 }}
+  >
+     <View style={{ flex: 1 }}>
+     <Tab.Navigator
+          screenOptions={{
+            tabBarShowLabel: false,
+            tabBarStyle: {
+              position: 'absolute',
+              bottom: 15,
+              marginHorizontal: 20,
+              height: 60,
+              borderRadius: 10,
+              shadowColor: '#000',
+              shadowOpacity: 0.9,
+              shadowOffset: {
+                width: 10,
+                height: 10,
+              },
+            },
+          }}
+        >
       <Tab.Screen
         name="HomeScreen"
         component={HomeScreen}
@@ -97,5 +101,7 @@ export default function Nav() {
         }}
       />
     </Tab.Navigator>
+    </View>
+     </KeyboardAvoidingView>
   );
 }

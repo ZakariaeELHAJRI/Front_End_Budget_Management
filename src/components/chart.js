@@ -29,22 +29,21 @@ export default TestChart;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center'
+   justifyContent: 'center',
+    alignItems: 'center',
   },
  chart: {
     position: 'absolute',
-    marginTop: 20,
     },
     title: {
     position : 'relative',
     fontSize: 24,
-    top: '45%',
+    top: '30%',
     },
     titleBalance: {
     position : 'relative',
     fontSize: 16,
-    top: '45%',
+    top: '30%',
     color: 'gray',
     },
 });

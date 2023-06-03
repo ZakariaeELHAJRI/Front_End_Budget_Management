@@ -7,6 +7,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
 import DropGroup from '../components/DropGroup';
 import DropMembres from '../components/DropMembres';
+import ExpenseCard from './../components/ExpencesCard';
 const ReportScreen = () => {
 const expenses = [
   { id: 1, icon: 'home', name: 'Home', date: 'May 20, 2023', amount: '$50' },
@@ -14,6 +15,8 @@ const expenses = [
   { id: 3, icon: 'shopping', name: 'Shopping', date: 'May 19, 2023', amount: '$80' },
   { id: 4, icon: 'bus-marker', name: 'Shopping', date: 'May 19, 2023', amount: '$80' },
   { id: 5, icon: 'shopping', name: 'Shopping', date: 'May 19, 2023', amount: '$80' },
+  { id: 6, icon: 'shopping', name: 'Shopping', date: 'May 19, 2023', amount: '$80' },
+  { id: 7, icon: 'car-back', name: 'Shopping', date: 'May 19, 2023', amount: '$10' },
   // Add more expense items as needed
 ];
 const groups= [
@@ -69,25 +72,6 @@ const Component3 = () => {
   );
  
 };
-const ExpenseCard = ({ icon, name, date, amount, color }) => {
-  return (
-    <View style={styles.card}>
-      <View style={styles.expenseInfo}>
-        <View style={[styles.circle, { backgroundColor: color }]}>
-          <MaterialCommunityIcons name={icon} size={32} color="white"  />
-        </View>
-        <Text style={styles.expenseName}>{name}</Text>
-        <Text style={styles.expenseDate}>{date}</Text>
-      </View>
-      <View style={styles.rightHeader}>
-      <Text style={styles.expenseAmount}>{amount}  </Text>
-     <MaterialIcons style={styles.expenseDetails} name="keyboard-arrow-right" size={24} color="black" />
-     </View>
-    </View>
-  );
-};
-
-
 
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [currentComponent, setCurrentComponent] = useState(0);
@@ -109,6 +93,7 @@ const ExpenseCard = ({ icon, name, date, amount, color }) => {
   return (
     <View style={styles.container}>
        <View style={styles.header}>
+        <View style={styles.header1}>
         <View style={styles.leftHeader}>
           <View>
                 <React.Fragment>
@@ -121,10 +106,9 @@ const ExpenseCard = ({ icon, name, date, amount, color }) => {
             <SimpleLineIcons name="options-vertical" size={24} color="#212A37"   />
           </TouchableOpacity>
         </View>
-      </View>
-      {/* ... */}
-      <View style={styles.body}>
-      <View style={styles.dropdown}>
+        </View>
+        <View style={styles.header2}>
+          <View style={styles.dropdown}>
           <View style={styles.leftHeader}>
             <TouchableOpacity onPress={handleBack}>
               <Ionicons name="arrow-back" size={25} color="#212A37" style={styles.arrow} />
@@ -141,6 +125,8 @@ const ExpenseCard = ({ icon, name, date, amount, color }) => {
             </TouchableOpacity>
           </View>
         </View>
+        </View>
+        <View style={styles.header3}>
         <View style={styles.dropdown}>
         
        
@@ -163,11 +149,16 @@ const ExpenseCard = ({ icon, name, date, amount, color }) => {
         
 
       </View>
+      </View>
+      </View>
+      {/* ... */}
+      <View style={styles.body}>
+    
         <View style={styles.chart}>
         <TestChart/>
         </View>
 
-
+      </View>
         {/* i need FlatList component goes here for the expense categories*/}
        <View style={styles.expenseCategories}>  
       
@@ -191,7 +182,7 @@ const ExpenseCard = ({ icon, name, date, amount, color }) => {
     
             </View>
             
-      </View>
+     
     </View>
   );
 };
@@ -206,16 +197,30 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 0,
     backgroundColor: '#FBF9F7',
+    flexDirection: 'column',
   },
   header: {
-    flexDirection: 'row',
-    marginTop: 5,
+    flexDirection: 'column',
     paddingHorizontal: 10,
     alignItems: 'center',
-    backgroundColor: '#FBF9F7',
-    height: '7%',
+    backgroundColor: '#FBF9F7',//#FBF9F7
+    flex: 1,
     justifyContent: 'space-between',
-
+   paddingBottom: 20,
+  },
+  header1: {
+    flexDirection: 'row',
+    marginTop: 5,
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  header2: {
+    flexDirection: 'row',
+    marginTop: 5,
+  },
+header3: {
+    flexDirection: 'row',
+    marginTop: 5,
   },
   leftHeader: {
     flexDirection: 'row',
@@ -241,15 +246,17 @@ const styles = StyleSheet.create({
   
   },
   body: {
-    height: '90%',
-    backgroundColor: '#FBF9F7',
+    flex: 2,
+    backgroundColor: '#FBF9F7',//#FBF9F7
+    padding : 10,
+    
   },
   dropdown: {
-    marginTop: 10,
+    marginTop: 0,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FBF9F7',
-    height: '8%',
+    width: '100%',
     justifyContent: 'space-between',
     padding: 10,
     borderBottomWidth: 1,
@@ -264,11 +271,6 @@ const styles = StyleSheet.create({
     width: '30%',
     justifyContent  : 'space-between',
   },
-  centerHeaderselect: {
-   
-   
-
-  } ,
   components: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -292,19 +294,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 10,
-    marginTop: 20,
+    marginTop: 10,
   },
   chart: {
-    marginTop: 10,
-    height: '40%',
-    backgroundColor: '#FBF9F7',
-    alignItems: 'center',
+   flex: 1,
+    backgroundColor: '#FBF9F7',  
     justifyContent: 'center',
+    alignItems: 'center',
   },
   expenseCategories : {
-    height: '40%',
+    flex: 2.5,
     backgroundColor: '#FBF9F7',
-   
+
     borderTopWidth: 1,
     borderTopColor: '#E5E5E5',
     borderBottomColor: '#E5E5E5',
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    marginTop: 10,
+    marginTop: 5,
     marginHorizontal: 20,
     
   },

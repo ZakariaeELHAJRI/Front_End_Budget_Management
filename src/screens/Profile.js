@@ -1,10 +1,24 @@
 import React ,{useEffect,useState} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet ,Button } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons ,AntDesign } from '@expo/vector-icons';
 import DatePicker from '../components/Calendar';
+import { TextInput } from 'react-native-gesture-handler';
+;
+
 
 const Profile = ({navigation }) => {
+    const [firstName, setFirstName ]= useState("");
+    onPressLearnMore=()=>{
+        console.log("learn more");
+        console.log(firstName);
+    }
+    const group = {
+        _id: Math.random().toString(),
+        name: firstName,
+      
+       
+      };
     useEffect(() => {
     const hideTabBar = navigation.addListener("focus", () => {
       console.log("focus");
@@ -17,6 +31,21 @@ const Profile = ({navigation }) => {
   }, [navigation]);
   return (
     <View style={styles.container}>
+        <TextInput  
+            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+            placeholder="First Name"
+            onChangeText={(text)=> setFirstName(text)}
+            />
+            <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+            placeholder="Last Name"
+            />
+                    <Button
+                onPress={onPressLearnMore}
+                title="submit"
+                backgroundColor="#000"
+                accessibilityLabel=" button"
+                />
       <Text>Profilr Screen</Text>
       <DatePicker/>
     </View>
