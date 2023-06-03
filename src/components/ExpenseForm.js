@@ -93,7 +93,7 @@ const handleBackToCategory = () => {
 
       <Text>Paid by:</Text>
       <Picker selectedValue={paidBy} onValueChange={(value) => setPaidBy(value)}>
-        <Picker.Item label="Select user" value="" />
+        <Picker.Item label="Select user " value="" />
         {group.members.map((memberId) => {
           const user = users.find((user) => user._id === memberId);
           return <Picker.Item key={user._id} label={user.name} value={user._id} />;
