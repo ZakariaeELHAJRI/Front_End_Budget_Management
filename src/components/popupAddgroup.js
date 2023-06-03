@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity ,Image,SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View,Keyboard, TouchableOpacity,Image,SafeAreaView, TouchableWithoutFeedback} from 'react-native';
 import Modal from 'react-native-modal';
 import React, { useEffect, useState } from 'react';
 import  Fontisto from 'react-native-vector-icons/Fontisto';
@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import SelectBox from 'react-native-multi-selectbox';
  import { xorBy } from 'lodash';
-import { TextInput } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 
 const K_OPTIONS = [
   {
@@ -68,10 +68,19 @@ const K_OPTIONS = [
 ]
 
 
-export default function AddGroup(props) {
-    const handlePress = props.handlePress;
 
-    const [selectedTeams, setSelectedTeams] = useState([])
+export default function AddGroup(props) {
+  const [nom, onChangeNom]=useState("");
+  const [selectedTeams, setSelectedTeams] = useState([]);
+  const AddGroupe=()=>{
+      
+  }
+  const handlePress = props.handlePress;
+
+    
+    useEffect(()=>{
+      console.log(selectedTeams,nom);
+    },[selectedTeams,nom]);
 
     function onMultiChange() {
       return (item) => setSelectedTeams(xorBy(selectedTeams, [item], 'id'))
@@ -82,8 +91,8 @@ export default function AddGroup(props) {
 //     }
 
 
-
-const [image, setImage] = useState('./assets/group.png');
+  
+const [image, setImage] = useState('https://images.unsplash.com/photo-1511988617509-a57c8a288659?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80');
 const pickImage = async () => {
   // No permissions request is necessary for launching the image library
   let result = await ImagePicker.launchImageLibraryAsync({
@@ -100,14 +109,16 @@ const pickImage = async () => {
   }
 };
 useEffect(()=>{
-  console.log(image);
+  console.log('image ..',image);
 },[image]);
+
+
     return(
         
       <SafeAreaView>
-            
+         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>    
         <Modal  transparent isVisible={true}>
-            
+         
         <View style={styles.modalContainer}>
           <TouchableOpacity style={styles.colsebutton} onPress={handlePress}>
             <Fontisto name='close-a'></Fontisto>
@@ -125,7 +136,7 @@ useEffect(()=>{
               <MaterialIcons style={styles.addButtonIcon} name='add'></MaterialIcons>
             </TouchableOpacity>   
           </View>
-      <TextInput  style={{marginVertical:10, }} label="Group Name" />
+      <TextInput  style={{marginVertical:10,backgroundColor:'white'}} label="Group Name" onChangeText={onChangeNom}/>
       <Text style={{ fontSize: 20, paddingBottom: 10 }}>Select Demo</Text>
       <SelectBox
         label="Select memebers"
@@ -134,10 +145,14 @@ useEffect(()=>{
         onMultiSelect={onMultiChange()}
         onTapClose={onMultiChange()}
         isMulti
-      />
-        </View>     
+      /> 
+      <TouchableOpacity style={styles.confirmAddGroup} onPress={AddGroupe}><Text style={{color:'#212A37',
+      fontSize:20,
+      fontWeight:'bold',}}>confirmer</Text></TouchableOpacity>
+        </View>   
+        
         </Modal>
-
+</TouchableWithoutFeedback>    
       </SafeAreaView>
     );
  }
@@ -161,6 +176,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'flex-end', 
         justifyContent:'center',
+        gap:-30,
         
       },
       circle: {
@@ -182,8 +198,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#D0D0D0',
         justifyContent: 'center',
         alignItems: 'center',
-        position:'absolute',
-        right:120,
+        // position:'absolute',
+        // right:120,
         
        
         
@@ -193,6 +209,19 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         color: 'white',
       },
+      confirmAddGroup:{
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'flex-start',
+      paddingHorizontal:10,
+      height: 40,
+      marginTop:20,
+      left:200,
+      backgroundColor: '#FF6238',
+      borderRadius: 20,
+      
+      }
+
 });
 
  

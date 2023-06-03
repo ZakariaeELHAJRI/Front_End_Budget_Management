@@ -32,20 +32,21 @@ const GroupScreen = () => {
   return (
     <View  style={{ flex: 1 }}>
           <View style={styles.headerContainer}>
-            <Icon style={styles.header} name="group"></Icon>
             <Text style={styles.header}>Groups</Text>
+            <View>
+            <TouchableOpacity
+              style={styles.buttonAddgroup}
+              onPress={handlePress}
+          >
+              <Text style={{fontWeight:'bold',fontSize:15}}>Add Group</Text>
+          </TouchableOpacity></View>
           </View>
           <FlatList
             data={DATA}
             renderItem={({group}) => <Card group={group} />}
             keyExtractor={item => item.id}
         />
-          <TouchableOpacity
-              style={styles.buttonAddgroup}
-              onPress={handlePress}
-          >
-              <Text><MaterialIcons style={styles.addgroupicone} name="group-add"></MaterialIcons></Text>
-          </TouchableOpacity>
+          
             
         {isViewVisible && (
             <AddGroup handlePress={handlePress} />
@@ -59,15 +60,19 @@ const styles = StyleSheet.create({
       // marginTop: StatusBar.currentHeight || 0,
     },
     headerContainer:{
-  
+      display:'flex',
       paddingVertical:10,
       paddingHorizontal:20,
-      height:60,
+      
       flexDirection:'row', 
       alignItems:'center',
+      
+      justifyContent:'space-between',
+     
     },
     header:{
       color:'#212A37',
+     
       fontSize:30,
       fontWeight:'bold',
     },
@@ -86,11 +91,9 @@ const styles = StyleSheet.create({
       borderColor: '#FF6238',
       alignItems: 'center',
       justifyContent: 'center',
-      width: 60,
-      height: 60,
-      position: 'absolute',
-      bottom: 50,
-      right: 20,
+      alignSelf: 'flex-start',
+      paddingHorizontal:10,
+      paddingVertical:5,
       backgroundColor: '#FF6238',
       borderRadius: 20,
     },
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
       color:'#212A37',
       fontSize:40,
       fontWeight:'bold',
-      margin:10,
+      // margin:10,
     },
   
     overlayVisible:{
