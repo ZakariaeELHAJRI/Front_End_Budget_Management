@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   header: {
+    marginTop: 10,
     flexDirection: 'column',
     paddingHorizontal: 10,
     alignItems: 'center',
@@ -228,7 +229,7 @@ header3: {
   },
   RepportTitle: {
    
-    fontSize: 20,
+    fontSize: 25,
     color: '#212A37',
     fontWeight: 'bold',
   },
@@ -313,6 +314,7 @@ header3: {
   },
 
   list: {
+    height: '78%',
     marginTop: 5,
     marginHorizontal: 20,
     

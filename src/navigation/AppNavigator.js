@@ -14,7 +14,7 @@ export default function Nav() {
   return (
     <KeyboardAvoidingView
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    style={{ flex: 1 }}
+    style={{ flex: 2 }}
   >
      <View style={{ flex: 1 }}>
      <Tab.Navigator

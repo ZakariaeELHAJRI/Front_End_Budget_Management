@@ -99,7 +99,7 @@ const sliceColor = ['#fdaf00', '#fd336b', '#00cdc0', '#fd336b', '#00cdc0'];
       />
     </View>
     
-            </View>
+       </View>
     </View>
   
     
@@ -279,9 +279,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   ButtomBG: {
-    flex: 1,
+   flex: 1,
     marginTop: 20,
-    marginBottom: 20,
     backgroundColor: '#FBF9F7', //#97cadb 
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
@@ -289,7 +288,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
 
   },
-  list: {
+  list: {   
+    height: '80%',
     marginTop: 5,
     marginHorizontal: 20,
     

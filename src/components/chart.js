@@ -38,12 +38,12 @@ const styles = StyleSheet.create({
     title: {
     position : 'relative',
     fontSize: 24,
-    top: '30%',
+    top: '20%',
     },
     titleBalance: {
     position : 'relative',
     fontSize: 16,
-    top: '30%',
+    top: '20%',
     color: 'gray',
     },
 });
