@@ -57,7 +57,7 @@ export default function Nav() {
         name="GroupStack"
         component={GroupStack}
         options={({ route }) => ({
-          
+          tabBarStyle:{display:'none'},
           header: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
