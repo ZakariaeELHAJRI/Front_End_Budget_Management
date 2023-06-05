@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { GiftedChat , Bubble, SystemMessage  } from "react-native-gifted-chat";
 import {TextInput, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-
+import DetailsGroup from '../screens/DetailsGroup';
 import {AntDesign, SimpleLineIcons, MaterialIcons } from '@expo/vector-icons';
 import { collection, addDoc,getDocs, orderBy, query, onSnapshot } from 'firebase/firestore';
 import { auth, database } from '../../config/firebase';
@@ -208,51 +208,53 @@ export default function ChatGroup({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <TouchableOpacity style={styles.header} onPress={()=> navigation.navigate(DetailsGroup)}>
+      
         <View style={styles.leftHeader}>
-        <TouchableOpacity onPress={handelbackgroup}>
-        <MaterialIcons style={styles.expenseDetails} name="keyboard-arrow-left" size={30} color="white" />
-        </TouchableOpacity>
-          <Image
-            style={styles.groupImage}
-            source={require('../../assets/my_pic.jpeg')}
-          />
-          <View>
-            {showSearch ? (
-              <TextInput
-                style={styles.searchInputText}
-                value={searchText}
-                onChangeText={setSearchText}
-                autoFocus={true}
-                onBlur={handleSearch} // Call handleSearch when input loses focus
-                onSubmitEditing={handleSearch} // Call handleSearch when enter is pressed
-                placeholder="Search" // i need to change the color of the placeholder
-                placeholderTextColor="white"
-              />
+          <TouchableOpacity onPress={handelbackgroup}>
+            <MaterialIcons style={styles.expenseDetails} name="keyboard-arrow-left" size={30} color="white" />
+          </TouchableOpacity>
+        <Image
+          style={styles.groupImage}
+          source={require('../../assets/my_pic.jpeg')}
+        />
+        <View>
+          {showSearch ? (
+            <TextInput
+              style={styles.searchInputText}
+              value={searchText}
+              onChangeText={setSearchText}
+              autoFocus={true}
+              onBlur={handleSearch} // Call handleSearch when input loses focus
+              onSubmitEditing={handleSearch} // Call handleSearch when enter is pressed
+              placeholder="Search" // i need to change the color of the placeholder
+              placeholderTextColor="white"
+            />
             ) : (
                 <React.Fragment>
                   <Text style={styles.groupTitle}>Group Name</Text>
                   <Text style={styles.groupMembers}>3 members</Text>
                 </React.Fragment>
               )}
-          </View>
         </View>
+      </View>
+      
         <View style={styles.rightHeader}>
           {showSearch ? (
             <TouchableOpacity onPress={handleCancelSearch}>
               <MaterialIcons name="cancel" size={24} color="white" />
             </TouchableOpacity>
-          ) : (
+           ) : (
               <TouchableOpacity onPress={handleSearchToggle}>
                 <AntDesign name={showSearch ? "close" : "search1"} size={24} color="white" />
               </TouchableOpacity>
             )}
-          <TouchableOpacity>
+              <TouchableOpacity>
             <SimpleLineIcons name="options-vertical" size={24} color="white"  onPress={onSignOut}  />
           </TouchableOpacity>
         </View>
-      </View>
-
+        
+      </TouchableOpacity>
       <View style={styles.conversation}>
             
             <ModalComponent

@@ -67,7 +67,7 @@ export default function Nav() {
                 color={focused ? '#FF6238' : '#748c94'}
               />
             </View>
-          ),
+          ), 
         })}
       /> 
       <Tab.Screen
