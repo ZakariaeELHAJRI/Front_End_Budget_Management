@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { GiftedChat } from "react-native-gifted-chat";
-import { Button, Modal, TextInput, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { FontAwesome5, AntDesign, SimpleLineIcons, MaterialIcons } from '@expo/vector-icons';
+import { GiftedChat , Bubble, SystemMessage  } from "react-native-gifted-chat";
+import {TextInput, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+
+import {AntDesign, SimpleLineIcons, MaterialIcons } from '@expo/vector-icons';
 import { collection, addDoc,getDocs, orderBy, query, onSnapshot } from 'firebase/firestore';
 import { auth, database } from '../../config/firebase';
-import { useNavigation } from '@react-navigation/native';
+import ModalComponent from "../components/ModelExpences";
 import { signOut } from "firebase/auth";
 
 const onSignOut = () => {
@@ -61,7 +62,75 @@ export default function ChatGroup({ navigation }) {
   const [expenses, setExpenses] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
+  const groups =[
+    {
+      "_id": "1",
+      "name": "Group 1",
+      "balance": 1000,
+      "members": ["1", "2", "3"],
+      "expenses": ["1", "2", "3"],
+      "reimbursement": ["1"],
+      "createdAt": "2023-05-30T10:00:00.000Z",
+      "updatedAt": "2023-05-30T10:00:00.000Z"
+    },
+    {
+      "_id": "2",
+      "name": "Group 2",
+      "balance": 500,
+      "members": ["1", "3"],
+      "expenses": ["2"],
+      "reimbursement": [],
+      "createdAt": "2023-05-29T15:30:00.000Z",
+      "updatedAt": "2023-05-29T15:30:00.000Z"
+    },
+    {
+      "_id": "3",
+      "name": "Group 3",
+      "balance": 1500,
+      "members": ["2", "3"],
+      "expenses": ["1", "3"],
+      "reimbursement": ["1"],
+      "createdAt": "2023-05-28T09:45:00.000Z",
+      "updatedAt": "2023-05-28T09:45:00.000Z"
+    }
+  ]
+  const selectedGroup = groups[0];
+  console.log(selectedGroup.members);
+  const users = [
+    {
+      "_id": "1",
+      "name": "User 1",
+      "email": "user1@example.com",
+      "password": "password1",
+      "phone": "1234567890",
+      "createdAt": "2023-05-30T10:00:00.000Z",
+      "updatedAt": "2023-05-30T10:00:00.000Z"
+    },
+    {
+      "_id": "2",
+      "name": "User 2",
+      "email": "user2@example.com",
+      "password": "password2",
+      "phone": "9876543210",
+      "createdAt": "2023-05-29T15:30:00.000Z",
+      "updatedAt": "2023-05-29T15:30:00.000Z"
+    },
+    {
+      "_id": "3",
+      "name": "User 3",
+      "email": "user3@example.com",
+      "password": "password3",
+      "phone": "5555555555",
+      "createdAt": "2023-05-28T09:45:00.000Z",
+      "updatedAt": "2023-05-28T09:45:00.000Z"
+    }
+  ];
 
+  const handelbackgroup = () => {
+    navigation.navigate('Group');
+  };
+  
   const handleSearchToggle = () => {
     setShowSearch(!showSearch);
   };
@@ -69,21 +138,24 @@ export default function ChatGroup({ navigation }) {
   const handleCancelSearch = () => {
     setSearchText("");
     setShowSearch(false);
-    setMessages([]);
+   // getdata();
+  // setMessages(messages);
   };
 
-  useEffect(() => {
+ /* useEffect(() => {
     const hideTabBar = navigation.addListener("focus", () => {
+      console.log("focus");
       navigation.setOptions({
         tabBarStyle: { display: "none" },
       });
+     
     });
-
     return hideTabBar;
-  }, [navigation]);
+  }, [navigation]);*/
 
   const openModal = () => {
     setShowModal(true);
+    //setSelectedCategory(null);
   };
 
   const closeModal = () => {
@@ -138,6 +210,9 @@ export default function ChatGroup({ navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftHeader}>
+        <TouchableOpacity onPress={handelbackgroup}>
+        <MaterialIcons style={styles.expenseDetails} name="keyboard-arrow-left" size={30} color="white" />
+        </TouchableOpacity>
           <Image
             style={styles.groupImage}
             source={require('../../assets/my_pic.jpeg')}
@@ -178,52 +253,63 @@ export default function ChatGroup({ navigation }) {
         </View>
       </View>
 
-      <View style={{ flex: 1 }}>
-        
-        <Modal visible={showModal} onRequestClose={closeModal} transparent>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <TextInput
-                placeholder="Category"
-                value={category}
-                onChangeText={setCategory}
-                style={styles.input}
-              />
-              <TextInput
-                placeholder="Product Name"
-                value={productName}
-                onChangeText={setProductName}
-                style={styles.input}
-              /> 
-              <TextInput
-                placeholder="Product Price"
-                value={productPrice}
-                onChangeText={setProductPrice}
-                keyboardType="numeric"
-                style={styles.input}
-              />
-              <Button title="Submit" onPress={handleAddExpense} />
-            </View>
-          </View>
-        </Modal>
+      <View style={styles.conversation}>
+            
+            <ModalComponent
+        showModal={showModal}
+        closeModal={closeModal}
+        users={users}
+        selectedGroup={selectedGroup}
+        handleAddExpense={handleAddExpense}
+      />
+            <GiftedChat
+  messages={messages} 
+  showUserAvatar={true}
+  onSend={(newMessage) => setMessages(GiftedChat.append(messages, newMessage))}
+  user={{
+    _id: auth.currentUser.uid,
+    avatar: "https://placeimg.com/140/140/any",
+  }}
+  renderInputToolbar={() => (
+    <View style={styles.addButtonContainer}>
+      <TouchableOpacity style={styles.addButton} onPress={openModal}>
+        <MaterialIcons name="add-shopping-cart" size={30} color="white" />
+      </TouchableOpacity>
+    </View>
+  )}
+  renderBubble={(props) => {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          left: {
+            backgroundColor: '#ddddddf5', // Color for received messages
+          },
+          right: {
+            backgroundColor: '#FFCA27',// Color for sent messages        
+          },
+        }}
+      />
+    );
+  }}
+  renderSystemMessage={(props) => (
+    <SystemMessage
+      {...props}
+      containerStyle={{
+        backgroundColor: '#FBF9F7', // Color for system messages
+        borderRadius: 4,
+        padding: 5,
+      }}
+      textStyle={{
+        color: 'black',
+        fontWeight: 'bold',
+      }}
 
-        <GiftedChat
-          messages={messages} 
-          showUserAvatar={true}
-          onSend={(newMessage) => setMessages(GiftedChat.append(messages, newMessage))}
-          user={{
-            _id: auth.currentUser.uid,
-            avatar: "https://placeimg.com/140/140/any",
-          }}
-          renderInputToolbar={() => (
-            <View style={styles.addButtonContainer}>
-              <TouchableOpacity style={styles.addButton} onPress={openModal}>
-                <MaterialIcons name="add-shopping-cart" size={30} color="white" />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-      </View>
+    />
+  )}
+/>
+
+</View>
     </View>
   );
 }
@@ -272,6 +358,10 @@ const styles = StyleSheet.create({
   optionsIcon: {
     // Add icon source or styling as per your requirement
   },
+  conversation: {
+    flex: 1,
+    backgroundColor: '#FBF9F7',
+  },
   searchInputText: {
     width: 200,
     color: "white",
@@ -280,40 +370,40 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "white",
   },
-  addButtonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-  },
-  addButton: {
-    width: 80,
-    height: 40,
-    borderRadius: 30,
-    backgroundColor: '#018abe',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    height: "50%",
-    backgroundColor: "#fff",
-    padding: 20,
+  
+  input: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    marginBottom: 10,
     borderRadius: 8,
   },
-  input: {
-    marginBottom: 10,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
+  addButtonContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+  },
+  btnModel: {
+    backgroundColor: '#FFCA27',
+    borderRadius: 20,
+    padding: 10,
+    marginTop: 10,
+  },
+  btnModelText: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  addButton: {
+    backgroundColor: '#FFCA27',
+    borderRadius: 20,
+    padding: 10,
   },
   expenseText: {
     marginBottom: 10,
+  },
+  checkbox: {
+    alignSelf: "center",
   },
 });

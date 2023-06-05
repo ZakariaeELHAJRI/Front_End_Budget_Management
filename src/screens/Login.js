@@ -60,9 +60,10 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FBF9F7",
   },
   title: {
+    position: "relative",
     fontSize: 36,
     fontWeight: 'bold',
     color: "orange",
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   button: {
-    backgroundColor: '#f57c00',
+    backgroundColor: '#FF6238',
     height: 58,
     borderRadius: 10,
     justifyContent: 'center',
