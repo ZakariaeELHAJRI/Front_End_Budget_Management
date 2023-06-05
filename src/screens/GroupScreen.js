@@ -5,7 +5,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Card from '../components/groupeCard.js';
 import AddGroup from '../components/popupAddgroup.js';
 import { useState } from 'react';
-const GroupScreen = () => {
+const GroupScreen = ({navigation}) => {
     const DATA = [
         {
           id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -26,6 +26,9 @@ const GroupScreen = () => {
       ];
       
       const [isViewVisible, setViewVisibility] = useState(false);
+      goToChatGroup = () => {
+        navigation.navigate('ChatGroup');
+      };
       const handlePress = () => {
         setViewVisibility(!isViewVisible);
       };
@@ -43,7 +46,13 @@ const GroupScreen = () => {
           </View>
           <FlatList
             data={DATA}
-            renderItem={({group}) => <Card group={group} />}
+            renderItem={({group}) =>
+            <TouchableOpacity
+            onPress={goToChatGroup}
+        >
+            <Card group={group} />
+            
+            </TouchableOpacity>}
             keyExtractor={item => item.id}
         />
           
