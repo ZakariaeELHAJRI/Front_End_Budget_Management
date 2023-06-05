@@ -104,7 +104,7 @@ const ProfileScreen = ({ navigation }) => {
       <View style={styles.options}>
         <TouchableOpacity style={styles.optionsBtn} onPress={() => navigation.navigate('HomeScreen')}>
         <View style={styles.circle}>
-        <MaterialCommunityIcons name='view-dashboard-outline' size={30} color="c2c2c299"  />
+        <MaterialCommunityIcons name='view-dashboard-outline' size={30} color="#f1f3f5"  />
               </View>
           <Text style={styles.optionText}>Dashboard</Text>
         </TouchableOpacity>
@@ -112,7 +112,7 @@ const ProfileScreen = ({ navigation }) => {
 
         <TouchableOpacity style={styles.optionsBtn} onPress={() => navigation.navigate('repport')}>
         <View style={styles.circle}>
-                <Ionicons name='stats-chart-outline' size={30} color="c2c2c299"  />
+                <Ionicons name='stats-chart-outline' size={30} color="#f1f3f5"  />
               </View>
           <Text style={styles.optionText}>Statics</Text>
         </TouchableOpacity>
@@ -120,14 +120,14 @@ const ProfileScreen = ({ navigation }) => {
 
         <TouchableOpacity style={styles.optionsBtn}>
         <View style={styles.circle}>
-                <Octicons name='key-asterisk' size={30} color="c2c2c299"  />
+                <Octicons name='key-asterisk' size={30} color="#f1f3f5"  />
               </View>
           <Text style={styles.optionText}>Change Password</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.optionsBtn} onPress={() => navigation.navigate('Login')}>
         <View style={styles.circle}>
-                <AntDesign name='logout' size={30} color="c2c2c299"  />
+                <AntDesign name='logout' size={30} color="#f1f3f5"  />
               </View>
           <Text style={styles.optionText}>Logout</Text>
         </TouchableOpacity>
