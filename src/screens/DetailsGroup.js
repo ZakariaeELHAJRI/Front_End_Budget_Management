@@ -1,8 +1,16 @@
-import React from 'react';
-import { View, Text ,StyleSheet, SafeAreaView, Image} from 'react-native';
+import React,{useState} from 'react';
+import { View, Text ,StyleSheet, SafeAreaView,TouchableOpacity, Image} from 'react-native';
+import AddGroup from '../components/popupAddgroup.js';
 
-export default DetailsGroup = () => {
- 
+const DetailsGroup = ({ navigation }) => {
+
+  const [balanceVisible, setBalanceVisible] = useState(true);
+  const [balance, setBalance] = useState("");
+
+const [isViewVisible, setViewVisibility] = useState(false);
+  const ModifyPress = () => {
+    setViewVisibility(!isViewVisible);
+  };
 return(
 
       <View style={styles.container}>
@@ -33,16 +41,20 @@ return(
               <Text style={{fontSize:22, fontWeight:"400"}}>Description</Text>
               <Text style={{fontSize:13, fontWeight:"400", color:'gray'}}>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</Text>
             </View>
-            <View>
-
-            </View>
+            <View style={{ display:'flex', justifyContent:'center',alignItems:'center'}}>
+              <Text style={styles.modifyGroup}
+              onPress={ModifyPress }>Modifier</Text>
           </View>
+          </View>
+          {isViewVisible && (
+            <AddGroup handlePress ={ModifyPress} balanceVisible={balanceVisible} setbalance={setBalance} />
+          )}
       </View>
  
 );
 };
 
-
+export default DetailsGroup
 
 
 const styles = StyleSheet.create({
@@ -98,5 +110,16 @@ membrePicture:{
   borderRadius:10,
   marginHorizontal:1,
   gap:100,
-}
+},
+modifyGroup:{
+  borderWidth: 1,
+  borderColor: '#FF6238',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingHorizontal:10,
+  paddingVertical:5,
+  backgroundColor: '#FF6238',
+  borderRadius: 20,
+  fontWeight:'bold',fontSize:15
+},
  })

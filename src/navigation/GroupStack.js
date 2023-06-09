@@ -11,13 +11,13 @@ const GroupStack = () => {
     
   return (
     <Stack.Navigator screenOptions={() => ({
-      headerShown: false,
-    })}
+      headerShown: false,})}
     >
+    
       <Stack.Screen name="Group" component={GroupScreen}/>
       <Stack.Screen name="ChatGroup" component={ChatGroup} />
-      
       <Stack.Screen name="DetailsGroup" component={DetailsGroup} />
+
     </Stack.Navigator>
   );
 };
