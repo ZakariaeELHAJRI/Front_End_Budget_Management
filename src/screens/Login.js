@@ -1,22 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../config/firebase";
-const backImage = require("../../assets/4.jpg");
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
 
 export default function Login({ navigation }) {
-
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const backImage = require("../../assets/4.jpg");
 
-  const onHandleLogin = () => {
-    if (email !== "" && password !== "") {
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Login success"))
-        .catch((err) => Alert.alert("Login error", err.message));
-    }
+  const onHandleLogin = async() => {
+    axios.post('https://budgetmanagement.herokuapp.com/auth/signin', {
+      email: email,
+      password: password,
+    })
+    .then(function (res) {
+      // window.localStorage.setItem('user' , res.data.user._id)
+      // window.localStorage.setItem('token' , res.data.token)
+
+      console.log(res.data)
+      AsyncStorage.setItem('user', res.data.user._id).then(()=>console.log('user saved'))
+      AsyncStorage.setItem('token', res.data.token).then(()=>console.log('token saved'))
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+   
   };
+ useEffect(() => {
   
+ }, [])
+ 
   return (
     <View style={styles.container}>
       <Image source={backImage} style={styles.backImage} />
@@ -44,7 +58,7 @@ export default function Login({ navigation }) {
         onChangeText={(text) => setPassword(text)}
       />
       <TouchableOpacity style={styles.button} onPress={onHandleLogin}>
-        <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Log In</Text>
+        <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Login</Text>
       </TouchableOpacity>
       <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
         <Text style={{color: 'gray', fontWeight: '600', fontSize: 14}}>Don't have an account? </Text>

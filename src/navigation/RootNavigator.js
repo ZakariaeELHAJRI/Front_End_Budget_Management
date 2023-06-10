@@ -4,22 +4,30 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './../../config/firebase';
+import AsyncStorage from '@react-native-community/async-storage';
 import HomeScreen from '../screens/HomeScreen';
 import Login from '../screens/Login';
 import Signup from '../screens/SignUp';
 import Nav from './../navigation/AppNavigator';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
 const Stack = createStackNavigator();
 const AuthenticatedUserContext = createContext({});
-import { createDrawerNavigator } from '@react-navigation/drawer';
+
 const Drawer = createDrawerNavigator();
+
 const AuthenticatedUserProvider = ({ children }) => {
+
   const [user, setUser] = useState(null);
+
 return (
     <AuthenticatedUserContext.Provider value={{ user, setUser }}>
       {children}
     </AuthenticatedUserContext.Provider>
   );
 };
+
+
 
 function BudgetStack() {
   return (
@@ -29,7 +37,6 @@ function BudgetStack() {
             }}
     >
       <Stack.Screen name='BudgetApp' component={Nav} />
-      <Stack.Screen name='Login' component={Login} />
     </Drawer.Navigator>
   );
 }
@@ -44,27 +51,20 @@ function AuthStack() {
 }
 
 function RootNavigator() {
-  const { user, setUser } = useContext(AuthenticatedUserContext);
+  const wewe=AsyncStorage.getItem('token').then(()=>console.log('token saved'))
+  const { user, setUser } = useState( wewe? wewe : null);
   const [isLoading, setIsLoading] = useState(true);
+
 useEffect(() => {
-    // onAuthStateChanged returns an unsubscriber
-    const unsubscribeAuth = onAuthStateChanged(
-      auth,
-      async authenticatedUser => {
-        authenticatedUser ? setUser(authenticatedUser) : setUser(null);
-        setIsLoading(false);
-      }
-    );
-// unsubscribe auth listener on unmount
-    return unsubscribeAuth;
+  user ? setIsLoading(false) : null
   }, [user]);
-if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' />
-      </View>
-    );
-  }
+// if (isLoading) {
+//     return (
+//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//         <ActivityIndicator size='large' />
+//       </View>
+//     );
+//   }
 
 return (
     <NavigationContainer>
