@@ -4,10 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './../../config/firebase';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
 import HomeScreen from '../screens/HomeScreen';
 import Login from '../screens/Login';
 import Signup from '../screens/SignUp';
@@ -22,7 +20,7 @@ const AuthenticatedUserProvider = ({ children }) => {
 return (
     <AuthenticatedUserContext.Provider value={{ user, setUser, 
     login : async (email, password) => {
-     await axios.post('https://budgetmanagement.herokuapp.com/auth/signin', {
+     await axios.post('http://10.0.2.2:3000/auth/signin', {
       email: email,
       password: password,
     })
