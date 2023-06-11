@@ -4,18 +4,46 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './../../config/firebase';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
 import HomeScreen from '../screens/HomeScreen';
 import Login from '../screens/Login';
 import Signup from '../screens/SignUp';
 import Nav from './../navigation/AppNavigator';
 const Stack = createStackNavigator();
-const AuthenticatedUserContext = createContext({});
+export const AuthenticatedUserContext = createContext({});
 import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
 const AuthenticatedUserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+
 return (
-    <AuthenticatedUserContext.Provider value={{ user, setUser }}>
+    <AuthenticatedUserContext.Provider value={{ user, setUser, 
+    login : async (email, password) => {
+     await axios.post('https://budgetmanagement.herokuapp.com/auth/signin', {
+      email: email,
+      password: password,
+    })
+    .then(function (res) {
+      // window.localStorage.setItem('user' , res.data.user._id)
+      // window.localStorage.setItem('token' , res.data.token)
+      setUser(res.data.user._id)
+      AsyncStorage.setItem('user', res.data.user._id).then(()=>console.log('user saved'))
+      AsyncStorage.setItem('token', res.data.token).then(()=>console.log('token saved'))
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    },
+    logout : async () => {
+      AsyncStorage.removeItem('user').then(()=>console.log('user removed'))
+      AsyncStorage.removeItem('token').then(()=>console.log('token removed'))
+      setUser(null)
+    } 
+  }}
+    >
       {children}
     </AuthenticatedUserContext.Provider>
   );
@@ -45,26 +73,35 @@ function AuthStack() {
 
 function RootNavigator() {
   const { user, setUser } = useContext(AuthenticatedUserContext);
-  const [isLoading, setIsLoading] = useState(true);
-useEffect(() => {
-    // onAuthStateChanged returns an unsubscriber
-    const unsubscribeAuth = onAuthStateChanged(
-      auth,
-      async authenticatedUser => {
-        authenticatedUser ? setUser(authenticatedUser) : setUser(null);
-        setIsLoading(false);
+  console.log('user', user);
+  // const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getUserFromStorage = async () => {
+      try {
+        const value = await AsyncStorage.getItem('token');
+        if (value !== null) {
+          setUser(value);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error retrieving user from AsyncStorage:', error);
       }
-    );
-// unsubscribe auth listener on unmount
-    return unsubscribeAuth;
-  }, [user]);
-if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' />
-      </View>
-    );
-  }
+    };
+  
+    getUserFromStorage();
+  }, []);
+
+
+// if (isLoading) {
+//     return (
+//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//         <ActivityIndicator size='large' />
+//       </View>
+//     );
+//   }
+
 
 return (
     <NavigationContainer>

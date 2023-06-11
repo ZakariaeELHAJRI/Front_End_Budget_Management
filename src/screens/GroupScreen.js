@@ -40,7 +40,22 @@ const GroupScreen = ({navigation}) => {
           title: 'Third Item',
         }
       ];
+
+      // const getGroupssFromApi = () => {
+      //    fetch('https://budgetmanagement.herokuapp.com/hello')
+      //     .then(response => response.json())
+      //     .then(json => {
+      //       console.log(json);
+      //     })
+      //     .catch(error => {
+      //       console.error(error);
+      //     });
+      // };
+      // React.useEffect(()=>{
+      //   getGroupssFromApi()
+      // },[])
       
+
       const [isViewVisible, setViewVisibility] = useState(false);
       goToChatGroup = () => {
         navigation.navigate('ChatGroup');

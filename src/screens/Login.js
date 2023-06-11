@@ -1,21 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 const backImage = require("../../assets/4.jpg");
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {AuthenticatedUserContext} from '../navigation/RootNavigator';
 
 export default function Login({ navigation }) {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onHandleLogin = () => {
-    if (email !== "" && password !== "") {
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Login success"))
-        .catch((err) => Alert.alert("Login error", err.message));
-    }
+  const {login} = useContext(AuthenticatedUserContext);
+  const onHandleLogin = async() => {
+
+    login(email, password)
+    // axios.post('https://budgetmanagement.herokuapp.com/auth/signin', {
+    //   email: email,
+    //   password: password,
+    // })
+    // .then(function (res) {
+    //   // window.localStorage.setItem('user' , res.data.user._id)
+    //   // window.localStorage.setItem('token' , res.data.token)
+    //   AsyncStorage.removeItem('user').then(()=>console.log('user removed'))
+    //   AsyncStorage.removeItem('token').then(()=>console.log('token removed'))
+    //   AsyncStorage.setItem('user', res.data.user._id).then(()=>console.log('user saved'))
+    //   AsyncStorage.setItem('token', res.data.token).then(()=>console.log('token saved'))
+    // })
+    // .catch(function (error) {
+    //   console.log(error);
+    // });
   };
+
+ useEffect(() => {
+  
+ }, [])
   
   return (
     <View style={styles.container}>
@@ -60,10 +80,9 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FBF9F7",
+    backgroundColor: "#fff",
   },
   title: {
-    position: "relative",
     fontSize: 36,
     fontWeight: 'bold',
     color: "orange",
@@ -99,7 +118,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   button: {
-    backgroundColor: '#FF6238',
+    backgroundColor: '#f57c00',
     height: 58,
     borderRadius: 10,
     justifyContent: 'center',

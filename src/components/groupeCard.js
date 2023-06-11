@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import DetailsGroup from '../screens/DetailsGroup';
+
 import ChatGroup from '../screens/ChatGroup';
 import { useNavigation } from '@react-navigation/native';
 export default function Card() {

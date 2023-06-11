@@ -72,11 +72,13 @@ const K_OPTIONS = [
 export default function AddGroup(props) {
   const [nom, onChangeNom]=useState("");
   const [selectedTeams, setSelectedTeams] = useState([]);
+  
   const AddGroupe=()=>{
       
   }
   const handlePress = props.handlePress;
-
+  const balanceVisible = props.balanceVisible;
+  const setbalance = props.setbalance;
     
     useEffect(()=>{
       console.log(selectedTeams,nom);
@@ -137,6 +139,9 @@ useEffect(()=>{
             </TouchableOpacity>   
           </View>
       <TextInput  style={{marginVertical:10,backgroundColor:'white'}} label="Group Name" onChangeText={onChangeNom}/>
+      {balanceVisible && (
+            <TextInput  style={{marginVertical:10,backgroundColor:'white'}} label="Group Balance" onChangeText={(e)=>setbalance(e)}/>
+          )}
       <Text style={{ fontSize: 20, paddingBottom: 10 }}>Select Demo</Text>
       <SelectBox
         label="Select memebers"
@@ -146,10 +151,12 @@ useEffect(()=>{
         onTapClose={onMultiChange()}
         isMulti
       /> 
+      
       <TouchableOpacity style={styles.confirmAddGroup} onPress={AddGroupe}><Text style={{color:'#212A37',
       fontSize:20,
       fontWeight:'bold',}}>confirmer</Text></TouchableOpacity>
-        </View>   
+        </View> 
+
         
         </Modal>
 </TouchableWithoutFeedback>    
