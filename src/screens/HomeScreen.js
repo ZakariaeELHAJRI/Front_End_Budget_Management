@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text , StyleSheet ,Image , FlatList ,TouchableOpacity } from 'react-native';
 import {FontAwesome5  ,SimpleLineIcons ,Feather , EvilIcons ,AntDesign ,MaterialCommunityIcons ,MaterialIcons ,Ionicons } from '@expo/vector-icons';
 import ExpenseCard from './../components/ExpencesCard';
+import {AuthenticatedUserContext} from '../navigation/RootNavigator';
 
 const expenses = [
   { id: 1, icon: 'home', name: 'Home', date: 'May 20, 2023', amount: '$50' },
@@ -15,7 +16,7 @@ const expenses = [
 ];
 const HomeScreen = () => {
 const sliceColor = ['#fdaf00', '#fd336b', '#00cdc0', '#fd336b', '#00cdc0'];
-
+const {logout} = useContext(AuthenticatedUserContext);
   return (
     <View style={styles.container}> 
     <View style = {styles.body}>
@@ -25,7 +26,7 @@ const sliceColor = ['#fdaf00', '#fd336b', '#00cdc0', '#fd336b', '#00cdc0'];
     </TouchableOpacity>
     <Text style = {styles.headerText}></Text>
     <TouchableOpacity>
-    <Ionicons name="md-person-circle-sharp" size={40} color="#FFCA27" />
+    <Ionicons name="md-person-circle-sharp" size={40} color="#FFCA27" onPress={()=>  logout().then(()=> console.log("loged out"))}  />
     </TouchableOpacity>
     </View>
 
