@@ -47,19 +47,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding:10,
     flexDirection: 'row',
-    marginHorizontal:20,
+    marginHorizontal:10,
     marginVertical:10,
-    height:160,
-    justifyContent:'center',
+    height:100,
+    justifyContent:'space-between',
+
     alignContent:'center',   
   },
   cont2:{ 
-    width:'52%',
+    width:'60%',
     flexDirection:'column',
     justifyContent:'space-around',
     alignContent:'center',
     padding:10,
-
   },
   containerDate:{
     flexDirection:'row',
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
 
 },
   title:{
+    marginBottom:5,
     color:'#212A37',
     fontSize:20,
     fontWeight:'bold',
@@ -81,23 +82,20 @@ const styles = StyleSheet.create({
 
   cont3:{
     width:'17%',
+    justifyContent:'center',
+   // right:0,
+   // backgroundColor:'red',
   },
   imagecontainer:{
-    backgroundColor:'red',
-
+  // backgroundColor:'red',
     alignContent:'center', 
-    borderRadius:20,
-    width:"30%",
-    
   },
-  img:{
-    flex:1 , 
-    width: undefined, 
-    height: undefined,
-    borderRadius:15,
+  img:{ 
+    width: 80,
+    height: 80,
+    borderRadius: 50,
   },
   blance:{
-    
     backgroundColor:'#FFCA27',
     borderRadius:10,
     paddingHorizontal:10,
@@ -110,6 +108,7 @@ const styles = StyleSheet.create({
     },
     containerMembers:{
         flexDirection:'row',
+        marginTop:10,
         gap:10,
         alignItems:'center',
     },

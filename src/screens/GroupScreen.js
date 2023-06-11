@@ -20,7 +20,23 @@ const GroupScreen = ({navigation}) => {
           title: 'Third Item',
         },
         {
-          id: '58694a0f-3da1-471f-bd96-5571e29d72',
+          id: '58694a0f-3da1-471f-bd96-557f1e29d72',
+          title: 'Third Item',
+        },
+        {
+          id: '58694a0f-3da1-471f-bd96-557d1e29d72',
+          title: 'Third Item',
+        },
+        {
+          id: '58694a0f-3da1-471f-bd96-55j71e29d72',
+          title: 'Third Item',
+        },
+        {
+          id: '58694a0f-3da1-471f-bd96-5571e2k9d72',
+          title: 'Third Item',
+        },
+        {
+          id: '58694a0f-3da1-471f-bd96-5571ekk29d72',
           title: 'Third Item',
         }
       ];

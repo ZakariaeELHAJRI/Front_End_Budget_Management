@@ -141,11 +141,13 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2e3541',
+    backgroundColor: '#ffffff',
   },
   color1: {
     flex: 3,
     backgroundColor: '#3576f6',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   color2: {
     flex: 7,
@@ -153,7 +155,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     position: 'absolute',
-    top: '5%',
+    top: 50,
     width: '100%',
     alignItems: 'center',
     
@@ -165,7 +167,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     position: 'absolute',
-    top: '12%',
+    top: 120,
     width: '80%',
     height: 200,
     backgroundColor: '#fdfdfd',
@@ -213,9 +215,9 @@ const styles = StyleSheet.create({
   },
   options: {
    position: 'absolute',
-    top: '40%',
+    top: 300,
     width: '90%',
-    height: 300,
+    height: 400,
    // backgroundColor: '#fdfdfd',
    // borderRadius: 8,
    // elevation: 20,

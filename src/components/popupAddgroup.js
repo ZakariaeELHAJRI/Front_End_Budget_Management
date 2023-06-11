@@ -212,11 +212,10 @@ const styles = StyleSheet.create({
       confirmAddGroup:{
       alignItems: 'center',
       justifyContent: 'center',
-      alignSelf: 'flex-start',
+      alignSelf: 'flex-end',
       paddingHorizontal:10,
       height: 40,
       marginTop:20,
-      left:200,
       backgroundColor: '#FF6238',
       borderRadius: 20,
       

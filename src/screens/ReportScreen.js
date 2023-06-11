@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState , useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity ,Modal ,Keyboard } from 'react-native';
 import { EvilIcons ,SimpleLineIcons,AntDesign ,MaterialCommunityIcons ,MaterialIcons ,Ionicons } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
 import TestChart from '../components/chart';
 import { FlatList } from 'react-native-gesture-handler';
-import { Picker } from '@react-native-picker/picker';
 import DropGroup from '../components/DropGroup';
 import DropMembres from '../components/DropMembres';
 import ExpenseCard from './../components/ExpencesCard';
-const ReportScreen = () => {
+import { style1, style2 } from '../navigation/styles';
+
+const ReportScreen = ({navigation}) => {
 const expenses = [
   { id: 1, icon: 'home', name: 'Home', date: 'May 20, 2023', amount: '$50' },
   { id: 2, icon: 'car-back', name: 'Gasoil', date: 'May 19, 2023', amount: '$30' },
@@ -19,40 +20,28 @@ const expenses = [
   { id: 7, icon: 'car-back', name: 'Shopping', date: 'May 19, 2023', amount: '$10' },
   // Add more expense items as needed
 ];
-const groups= [
-  {
-    "_id": "1",
-    "name": "Group 1",
-    "balance": 1000,
-    "members": ["1", "2", "3"],
-    "expenses": ["1", "2", "3"],
-    "reimbursement": ["1"],
-    "createdAt": "2023-05-30T10:00:00.000Z",
-    "updatedAt": "2023-05-30T10:00:00.000Z"
-  },
-  {
-    "_id": "2",
-    "name": "Group 2",
-    "balance": 500,
-    "members": ["1", "3"],
-    "expenses": ["2"],
-    "reimbursement": [],
-    "createdAt": "2023-05-29T15:30:00.000Z",
-    "updatedAt": "2023-05-29T15:30:00.000Z"
-  },
-  {
-    "_id": "3",
-    "name": "Group 3",
-    "balance": 1500,
-    "members": ["2", "3"],
-    "expenses": ["1", "3"],
-    "reimbursement": ["1"],
-    "createdAt": "2023-05-28T09:45:00.000Z",
-    "updatedAt": "2023-05-28T09:45:00.000Z"
-  }
-];
+
 const sliceColor = ['#fdaf00', '#fd336b', '#00cdc0', '#fd336b', '#00cdc0'];
 const [selectedGroup, setSelectedGroup] = useState('');
+  // use effect to hide tab navigation when keyboard is open
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      navigation.setOptions({
+        tabBarStyle: style2.tabBar, // Update the tabBarStyle with styles2 when keyboard is shown
+      });
+    });
+  
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      navigation.setOptions({
+        tabBarStyle: style1.tabBar, // Update the tabBarStyle with styles1 when keyboard is hidden
+      });
+    });
+  
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, [navigation]);
 const handleGroupChange = (itemValue) => {
   setSelectedGroup(itemValue);
 };
@@ -72,7 +61,6 @@ const Component3 = () => {
   );
  
 };
-
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [currentComponent, setCurrentComponent] = useState(0);
   const components = [Component1, Component2, Component3];
@@ -91,7 +79,7 @@ const Component3 = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View    style={styles.container}>
        <View style={styles.header}>
         <View style={styles.header1}>
         <View style={styles.leftHeader}>
@@ -126,30 +114,24 @@ const Component3 = () => {
           </View>
         </View>
         </View>
-        <View style={styles.header3}>
-        <View style={styles.dropdown}>
-        
-       
 
-        <View style={styles.centerHeader}>
-          
-          <Text style={styles.dropdownText}>Today</Text>
-          <TouchableOpacity onPress={toggleCalendarVisibility}>
-          <AntDesign name="calendar" size={24} color="black" />
-          </TouchableOpacity>
-      
+                    <View style={styles.header3}>
+                    <View style={styles.centerHeader}>
+                      <TouchableOpacity style={styles.showCalendar} onPress={toggleCalendarVisibility}>
+                        <Text style={styles.dropdownText}>Today</Text>
+                        <AntDesign name="calendar" size={24} color="black" />
+                      </TouchableOpacity>
 
-        {isCalendarVisible && (
-          <View style={styles.calendar}>
-            <Calendar /* Calendar component props go here */ />
-          </View>
-        )}
-     </View>
-      
-        
-
-      </View>
-      </View>
+                      <Modal visible={isCalendarVisible} animationType="slide">
+                        <View style={[styles.modalContainer, { height: 150, width: '80%', borderRadius: 10 }]}>
+                          <TouchableOpacity style={styles.closeButton} onPress={toggleCalendarVisibility}>
+                            <Text style={styles.closeButtonText}>Close</Text>
+                          </TouchableOpacity>
+                          <Calendar /* Calendar component props go here */ />
+                        </View>
+                      </Modal>
+                    </View>
+                  </View>
       </View>
       {/* ... */}
       <View style={styles.body}>
@@ -205,9 +187,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     alignItems: 'center',
     backgroundColor: '#FBF9F7',//#FBF9F7
-    flex: 1,
+    //flex: 1,
     justifyContent: 'space-between',
-   paddingBottom: 20,
+    position: 'relative',
+ //  paddingBottom: 20,
   },
   header1: {
     flexDirection: 'row',
@@ -222,6 +205,16 @@ const styles = StyleSheet.create({
 header3: {
     flexDirection: 'row',
     marginTop: 5,
+ 
+  },
+  showCalendar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    padding: 10,
+    borderRadius: 10,
   },
   leftHeader: {
     flexDirection: 'row',
@@ -247,9 +240,10 @@ header3: {
   
   },
   body: {
-    flex: 2,
+   // flex: 2,
+  height: 260,
     backgroundColor: '#FBF9F7',//#FBF9F7
-    padding : 10,
+   // padding : 10,
     
   },
   dropdown: {
@@ -268,9 +262,11 @@ header3: {
   centerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-  
-    width: '30%',
-    justifyContent  : 'space-between',
+   
+    borderBottomColor: '#E5E5E5', 
+    borderBottomWidth: 2,
+    width: '100%', 
+    // justifyContent  : 'space-between',
   },
   components: {
     flexDirection: 'row',
@@ -284,6 +280,7 @@ header3: {
     color: '#333',
     marginLeft: 10,
     fontWeight: 'bold',
+    marginRight: 30,
   },
   dropdownIcon: {
     marginRight: 10,
@@ -291,7 +288,6 @@ header3: {
   calendar: {
    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 10,
