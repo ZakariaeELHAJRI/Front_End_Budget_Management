@@ -1,99 +1,110 @@
 import { StyleSheet ,FlatList, Text, View, TouchableOpacity} from 'react-native';
-import React from 'react'
+import React ,{useEffect ,useContext} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Card from '../components/groupeCard.js';
 import AddGroup from '../components/popupAddgroup.js';
 import { useState } from 'react';
-const GroupScreen = ({navigation}) => {
-    const DATA = [
-        {
-          id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-          title: 'First Item',
-        },
-        {
-          id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f3',
-          title: 'Second Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-1455719d72',
-          title: 'Third Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-557f1e29d72',
-          title: 'Third Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-557d1e29d72',
-          title: 'Third Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-55j71e29d72',
-          title: 'Third Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-5571e2k9d72',
-          title: 'Third Item',
-        },
-        {
-          id: '58694a0f-3da1-471f-bd96-5571ekk29d72',
-          title: 'Third Item',
-        }
-      ];
+import axios from 'axios';
+import { AuthenticatedUserContext } from "../navigation/RootNavigator";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { async } from '@firebase/util';
 
-      // const getGroupssFromApi = () => {
-      //    fetch('https://budgetmanagement.herokuapp.com/hello')
-      //     .then(response => response.json())
-      //     .then(json => {
-      //       console.log(json);
-      //     })
-      //     .catch(error => {
-      //       console.error(error);
-      //     });
-      // };
-      // React.useEffect(()=>{
-      //   getGroupssFromApi()
-      // },[])
-      
 
-      const [isViewVisible, setViewVisibility] = useState(false);
-      goToChatGroup = () => {
-        navigation.navigate('ChatGroup');
-      };
-      const handlePress = () => {
-        setViewVisibility(!isViewVisible);
-      };
+
+const GroupScreen = ({ navigation }) => {
+ const { user } = useContext(AuthenticatedUserContext);
+
+
+
+    
+  const [data, setData] = useState([]);
+ // const [token, setToken] = useState(null);
+ // const [userId, setUserId] = useState(null);
+  const [isViewVisible, setViewVisibility] = useState(false);
+  const [users, setUsers] = useState([]);
+  const token = user.token;
+  const userId = user.id;
+  console.log('token session', token);
+   console.log(' user', user);
+   console.log('userId session', userId);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  useEffect(() => {
+   /* const fetchTokenID = async () => {
+     const tok = await  AsyncStorage.getItem('token');
+     const user =  await AsyncStorage.getItem('user');
+     setToken(tok);
+     setUserId(user);
+     
+    };
+    fetchTokenID();*/
+ 
+    fetchData();
+    fetchUsers();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://10.0.2.2:3000/service/group/${userId}`, { headers });
+      console.log('group by user', response.data);
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  const fetchUsers = async () => {
+     try {
+      const response = await axios.get(`http://10.0.2.2:3000/auth/getAllUsers`, { headers });
+     console.log('all users **********************', response.data);
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+
+  };
+
+  const handlePress = () => {     
+          setViewVisibility(!isViewVisible);
+          console.log('users passed ======', users);
+  };
+
+  const goToChatGroup = () => {
+    navigation.navigate('ChatGroup');
+  };
+
   return (
-    <View  style={{ flex: 1 }}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.header}>Groups</Text>
-            <View>
-            <TouchableOpacity
-              style={styles.buttonAddgroup}
-              onPress={handlePress}
-          >
-              <Text style={{fontWeight:'bold',fontSize:15}}>Add Group</Text>
-          </TouchableOpacity></View>
-          </View>
-          <FlatList
-            data={DATA}
-            renderItem={({group}) =>
-            <TouchableOpacity
-            onPress={goToChatGroup}
-        >
-            <Card group={group} />
-            
-            </TouchableOpacity>}
-            keyExtractor={item => item.id}
-        />
-          
-            
-        {isViewVisible && (
-            <AddGroup handlePress={handlePress} />
-          )}
+    <View style={{ flex: 1 }}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Groups</Text>
+        <View>
+          <TouchableOpacity style={styles.buttonAddgroup} onPress={handlePress}>
+            <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Add Group</Text>
+          </TouchableOpacity>
         </View>
-  )
-}
+      </View>
+      <FlatList
+        data={data}
+        renderItem={({ item: group }) => (
+          <TouchableOpacity onPress={goToChatGroup}>
+            <Card
+              title={group.name}
+              date={group.createdAt}
+              members={group.members}
+              balance={group.balance}
+            />
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item._id}
+      />
+
+      {isViewVisible && <AddGroup handlePress={handlePress} allusers={users}  />}
+    </View>
+  );
+};
+
+export default GroupScreen;
 const styles = StyleSheet.create({
     container: {
      // flex: 1,
@@ -150,6 +161,3 @@ const styles = StyleSheet.create({
     }
   });
   
-  
-
-export default GroupScreen

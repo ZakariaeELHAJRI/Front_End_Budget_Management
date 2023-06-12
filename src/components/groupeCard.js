@@ -3,42 +3,52 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import ChatGroup from '../screens/ChatGroup';
 import { useNavigation } from '@react-navigation/native';
-export default function Card() {
+export default function Card({ title, date, members, balance }) {
   const navigation = useNavigation();
 
-  return(
-      <TouchableOpacity onPress={()=> navigation.navigate(ChatGroup)}>
-        <View style={styles.groupBox}>
+  const renderMemberAvatars = () => {
+    if (!members || members.length === 0) {
+      return null;
+    }
+
+    // Displaying the first letter of each member's name as an avatar
+    return members.map((member, index) => (
+      <Image
+        key={index}
+        style={styles.wewe}
+        source={require('../../assets/favicon.png')}
+      />
+    ));
+  };
+
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate(ChatGroup)}>
+      <View style={styles.groupBox}>
         <View style={styles.imagecontainer}>
-          <Image style={styles.img} source={require('../../assets/group.png')}></Image>
+          <Image
+            style={styles.img}
+            source={require('../../assets/group.png')}
+          />
         </View>
         <View style={styles.cont2}>
-            <Text style={styles.title}>Family</Text>
-            <View style={styles.containerDate}>
-                <Icon name="calendar" size={16} color="gray" />
-                    <Text style={styles.date}>15 July </Text>
-                </View>
-                <View style={styles.containerMembers}>
-                    <View style={styles.members} >
-                        <Image style={styles.wewe} source={require('../../assets/favicon.png')}></Image>
-                        <Image style={styles.wewe} source={require('../../assets/favicon.png')}></Image>
-                        <Image style={styles.wewe} source={require('../../assets/favicon.png')}></Image>
-                        <Image style={styles.wewe} source={require('../../assets/favicon.png')}></Image>
-                    </View>
-                    <Text style={{color:'gray'}}>members</Text>
-
-                </View>
-
-
+          <Text style={styles.title}>{title}</Text>
+          <View style={styles.containerDate}>
+            <Icon name="calendar" size={16} color="gray" />
+            <Text style={styles.date}>{date}</Text>
           </View>
+          <View style={styles.containerMembers}>
+            <View style={styles.members}>{renderMemberAvatars()}</View>
+            <Text style={{ color: 'gray' }}>members</Text>
+          </View>
+        </View>
         <View style={styles.cont3}>
           <View style={styles.blance}>
-            <Text style={styles.amount}>300$</Text>
+            <Text style={styles.amount}>{balance} $</Text>
           </View>
         </View>
       </View>
-      </TouchableOpacity>
-    );
+    </TouchableOpacity>
+  );
 }
 const styles = StyleSheet.create({
  

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { GiftedChat , Bubble, SystemMessage  } from "react-native-gifted-chat";
 import {TextInput, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import DetailsGroup from '../screens/DetailsGroup';
@@ -8,53 +8,19 @@ import { auth, database } from '../../config/firebase';
 import ModalComponent from "../components/ModelExpences";
 import { signOut } from "firebase/auth";
 
+import { AuthenticatedUserContext } from "../navigation/RootNavigator";
+
 const onSignOut = () => {
   signOut(auth).catch(error => console.log('Error logging out: ', error));
 };
 
 export default function ChatGroup({ navigation }) {
+  const { user } = useContext(AuthenticatedUserContext);
+  console.log("current user "+ user.id);
   const [messages, setMessages] = useState([]);
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const messagesRef = collection(database, 'depences');
-         // Replace 'depences' with your actual collection name
-        const querySnapshot = await getDocs(messagesRef);
-        const fetchedMessages = [];
-        querySnapshot.forEach((doc) => {
-          const messageData = doc.data();
-          fetchedMessages.push(messageData);
-        });
-        setMessages(fetchedMessages);
-        console.log('Messages retrieved from Firebase');
-      } catch (error) {
-        console.error('Error retrieving messages from Firebase:', error);
-      }
-    };
-    fetchMessages();
+    
   }, []);
-
- const getdata= useEffect(() => {
-    const messagesRef = collection(database, 'depences'); // Replace 'depences' with your actual collection name
-    const q = query(messagesRef, orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const updatedMessages = [];
-      querySnapshot.forEach((doc) => {
-        const messageData = doc.data();
-        messageData.createdAt = doc.data().createdAt.toDate(),
-        messageData.user = {
-          _id: doc.data().user._id,
-          name: doc.data().user.name,
-          avatar: "https://placeimg.com/140/140/any",
-        },
-        updatedMessages.push(messageData);
-      });
-      setMessages(updatedMessages);
-      console.log('Messages updated in real-time');
-    });
-    return () => unsubscribe();
-  }, []);
-
   const [showModal, setShowModal] = useState(false);
   const [category, setCategory] = useState("");
   const [productName, setProductName] = useState("");
@@ -179,7 +145,7 @@ export default function ChatGroup({ navigation }) {
       text: `Item added: ${expense.category} - ${expense.productName} ($${expense.productPrice})`,
       createdAt: new Date(),
       user: {
-        _id: auth.currentUser.uid,
+        _id: user.id,
       },
       idGroup: 1,
       depencesName: '', 
@@ -269,7 +235,7 @@ export default function ChatGroup({ navigation }) {
   showUserAvatar={true}
   onSend={(newMessage) => setMessages(GiftedChat.append(messages, newMessage))}
   user={{
-    _id: auth.currentUser.uid,
+    _id: user.id,
     avatar: "https://placeimg.com/140/140/any",
   }}
   renderInputToolbar={() => (

@@ -1,22 +1,24 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, ActivityIndicator } from 'react-native';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './../../config/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import HomeScreen from '../screens/HomeScreen';
 import Login from '../screens/Login';
 import Signup from '../screens/SignUp';
 import Nav from './../navigation/AppNavigator';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
 const Stack = createStackNavigator();
 export const AuthenticatedUserContext = createContext({});
-import { createDrawerNavigator } from '@react-navigation/drawer';
+
+
 const Drawer = createDrawerNavigator();
 const AuthenticatedUserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+
+  
 return (
     <AuthenticatedUserContext.Provider value={{ user, setUser, 
     login : async (email, password) => {
@@ -27,7 +29,11 @@ return (
     .then(function (res) {
       // window.localStorage.setItem('user' , res.data.user._id)
       // window.localStorage.setItem('token' , res.data.token)
-      setUser(res.data.user._id)
+      setUser({
+        token: res.data.token,
+        id: res.data.user._id,
+      });
+      console.log('user id', res.data.user._id , 'token', res.data.token)
       AsyncStorage.setItem('user', res.data.user._id).then(()=>console.log('user saved'))
       AsyncStorage.setItem('token', res.data.token).then(()=>console.log('token saved'))
     })
@@ -78,8 +84,12 @@ function RootNavigator() {
     const getUserFromStorage = async () => {
       try {
         const value = await AsyncStorage.getItem('token');
+        const user = await AsyncStorage.getItem('user');
         if (value !== null) {
-          setUser(value);
+          setUser({
+            token: value,
+            id: user,
+          });
         } else {
           setUser(null);
         }
@@ -89,18 +99,7 @@ function RootNavigator() {
     };
   
     getUserFromStorage();
-  }, []);
-
-
-// if (isLoading) {
-//     return (
-//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//         <ActivityIndicator size='large' />
-//       </View>
-//     );
-//   }
-
-
+  }, []); 
 return (
     <NavigationContainer>
       {user ? <BudgetStack /> : <AuthStack />}
