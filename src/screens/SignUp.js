@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState , useContext} from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "../../config/firebase";
+import {AuthenticatedUserContext} from '../navigation/RootNavigator';
 const backImage = require("../../assets/4.jpg");
 
 export default function Signup({ navigation }) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const {signup} = useContext(AuthenticatedUserContext);
 
 const onHandleSignup = () => {
-    if (email !== '' && password !== '') {
-  createUserWithEmailAndPassword(auth, email, password)
-        .then(() => console.log('Signup success'))
-        .catch((err) => Alert.alert("Login error", err.message));
-    }
+  //   if (email !== '' && password !== '') {
+  // createUserWithEmailAndPassword(auth, email, password)
+  //       .then(() => console.log('Signup success'))
+  //       .catch((err) => Alert.alert("Login error", err.message));
+  //   }
+  signup(email,password,name,navigation)
   };
   
   return (
@@ -42,6 +46,12 @@ const onHandleSignup = () => {
         textContentType="password"
         value={password}
         onChangeText={(text) => setPassword(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Enter name"
+        autoCapitalize="none"
+        onChangeText={(text) => setName(text)}
       />
       <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
         <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Sign Up</Text>

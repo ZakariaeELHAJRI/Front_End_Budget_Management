@@ -1,5 +1,7 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+
+
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -16,8 +18,6 @@ export const AuthenticatedUserContext = createContext({});
 const Drawer = createDrawerNavigator();
 const AuthenticatedUserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-
   
 return (
     <AuthenticatedUserContext.Provider value={{ user, setUser, 
@@ -45,8 +45,26 @@ return (
       AsyncStorage.removeItem('user').then(()=>console.log('user removed'))
       AsyncStorage.removeItem('token').then(()=>console.log('token removed'))
       setUser(null)
-    } 
-  }}
+    } ,  
+    signup : async (email,password,name,navigation) => {
+      await axios.post('http://10.0.2.2:3000/auth/signup', {
+      email: email,
+      password: password,
+      name: name,
+     
+    })
+    .then(function(data){ console.log('signup succefull',data.data.user.name)
+    navigation.navigate('Login')
+  }
+    
+    )
+    .catch(function (error) {
+      console.log(error);
+    });
+    },
+}
+  }
+    
     >
       {children}
     </AuthenticatedUserContext.Provider>
