@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useContext} from 'react';
 import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, Keyboard } from 'react-native';
 import { AntDesign , MaterialCommunityIcons , Ionicons ,Octicons ,SimpleLineIcons  } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-
+import { AuthenticatedUserContext } from "../navigation/RootNavigator";
 const ProfileScreen = ({ navigation }) => {
+  const { logout } = useContext(AuthenticatedUserContext);
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [rewritePassword, setRewritePassword] = useState('');
@@ -129,7 +130,7 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.circle}>
                 <AntDesign name='logout' size={30} color="#f1f3f5"  />
               </View>
-          <Text style={styles.optionText}>Logout</Text>
+          <Text style={styles.optionText} onPress={()=>  logout().then(()=> console.log("loged out"))} >Logout</Text>
         </TouchableOpacity>
 
         </View>

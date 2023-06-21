@@ -4,19 +4,22 @@ import { Picker } from '@react-native-picker/picker';
 import Checkbox from './Checkbox';
 import axios from 'axios';
 import { AuthenticatedUserContext } from '../navigation/RootNavigator';
+import { set } from 'react-native-reanimated';
 
 const ExpenseForm = ({ group, users }) => {
   const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState();
   const [paidBy, setPaidBy] = useState('');
   const [products, setProducts] = useState([]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [productName, setProductName] = useState('');
-  const [productPrice, setProductPrice] = useState('');
+  const [productPrice, setProductPrice] = useState();
   const [productBeneficiaries, setProductBeneficiaries] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
- const [descptionPrd, setDescptionPrd] = useState('');
+  const [descptionPrd, setDescptionPrd] = useState('');
+  const [expense, setExpense] = useState('');
+
   const { user } = useContext(AuthenticatedUserContext);
   const token = user.token;
   const userId = user.id;
@@ -31,16 +34,16 @@ const ExpenseForm = ({ group, users }) => {
     console.log('all categories after **********************', categories);
   }, []);
 
-
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`http://10.0.2.2:3000/expensetype/`, { headers });
+      const response = await axios.get('http://10.0.2.2:3000/expensetype/', { headers });
       console.log('all categories before **********************', response.data);
       setCategories(response.data.expenetype);
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(() => {
     console.log('Updated productBeneficiaries:', productBeneficiaries);
     console.log('back to list category:', selectedCategory);
@@ -53,15 +56,12 @@ const ExpenseForm = ({ group, users }) => {
 
   const handleAddProductSubmit = () => {
     const product = {
-      _id: Math.random().toString(),
       name: productName,
       price: productPrice,
       description: descptionPrd,
       image: '',
-      category: selectedCategory, // Add the selected category here
+      category: selectedCategory,
       members: productBeneficiaries,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
     setProducts((prevProducts) => [...prevProducts, product]);
@@ -70,26 +70,40 @@ const ExpenseForm = ({ group, users }) => {
     setProductPrice('');
     setDescptionPrd('');
     setProductBeneficiaries([]);
+  };
 
-   //setShowProductModal(false); 
+  const handleAddExpense = async (data) => {
+    try {
+      console.log('expense to add', data);
+      const response = await axios.post('http://10.0.2.2:3000/service/createExpenseWithProducts', data, { headers });
+      console.log('expense added', response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSubmit = () => {
-    const expense = {
+    const expenseData = {
       description,
       amount,
-      idGroup: group._id,
+      Group: group._id,
       paiby: user.id,
       products,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
-    console.log("expense  details =========+> : "+JSON.stringify(expense));
+    console.log("expense  details =========+> : "+JSON.stringify(expenseData));
+    setExpense(expenseData);
+
+    if (description === '' || amount === '' || products.length === 0) {
+      console.log('Please fill all the fields');
+    } else {
+       handleAddExpense(expenseData);
+      console.log('expense added', expenseData);
+    }
     console.log(productBeneficiaries);
 
     setDescription('');
-    setAmount('');
+    setAmount();
     setPaidBy('');
     setProducts([]);
   };
@@ -113,7 +127,7 @@ const handleBackToCategory = () => {
         keyboardType="numeric"
       />
 
-      <Text>Paid by:</Text>
+      {/* <Text>Paid by:</Text>
     
        <Picker selectedValue={paidBy} onValueChange={(value) => setPaidBy(value)}>
       <Picker.Item label="Select user" value="" />
@@ -121,7 +135,7 @@ const handleBackToCategory = () => {
         <Picker.Item key={user._id} label={user.name} value={user._id} />
       ))}
     </Picker>
-
+    */} 
 
       <Text>Products:</Text>
       {products.map((product) => (

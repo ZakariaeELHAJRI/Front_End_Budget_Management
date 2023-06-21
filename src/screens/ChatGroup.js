@@ -1,45 +1,72 @@
 import React, { useState, useEffect, useContext } from "react";
-import { GiftedChat , Bubble, SystemMessage  } from "react-native-gifted-chat";
-import {TextInput, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import DetailsGroup from '../screens/DetailsGroup';
-import {AntDesign, SimpleLineIcons, MaterialIcons } from '@expo/vector-icons';
-import { collection, addDoc,getDocs, orderBy, query, onSnapshot } from 'firebase/firestore';
-import { auth, database } from '../../config/firebase';
-import ModalComponent from "../components/ModelExpences";
-import { signOut } from "firebase/auth";
+import { GiftedChat, Bubble, SystemMessage } from "react-native-gifted-chat";
+import {
+  TextInput,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import { AntDesign, SimpleLineIcons, MaterialIcons } from "@expo/vector-icons";
+import axios from "axios";
 
+import ModalComponent from "../components/ModelExpences";
 import { AuthenticatedUserContext } from "../navigation/RootNavigator";
 
-const onSignOut = () => {
-  signOut(auth).catch(error => console.log('Error logging out: ', error));
-};
-
-export default function ChatGroup({ navigation ,route  }) {
+export default function ChatGroup({ navigation, route }) {
   const { user } = useContext(AuthenticatedUserContext);
-  console.log("current user "+ user.id);
+  console.log("current user " + user.id);
   const [messages, setMessages] = useState([]);
- const { group } = route.params;
+  const { group } = route.params;
   const users = group.usersInfo;
+  const token = user.token;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   useEffect(() => {
     console.log("current group info: ", JSON.stringify(group));
-   
-console.log("users: ", users);
-  }, []);
-  const [showModal, setShowModal] = useState(false);
-  const [category, setCategory] = useState("");
-  const [productName, setProductName] = useState("");
-  const [productPrice, setProductPrice] = useState("");
-  const [expenses, setExpenses] = useState([]);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [selectedUser, setSelectedUser] = useState(null);
-// map from group.usersInfo[]
+    console.log("users: ", users);
 
+    // Fetch expenses from MongoDB database
+    fetchExpenses();
+  }, []);
+
+  const fetchExpenses = async () => {
+    try {
+      const response = await axios.get(`http://10.0.2.2:3000/expense`, { headers});
+      const expenses = response.data.filter((expense) => expense.Group === group._id)
+      console.log("Expenses: ", expenses);
+
+      // Convert expenses to chat messages format
+      const chatMessages = expenses.map((expense) => {
+        console.log("expense: ", expense);
+        return {
+          _id: expense._id,
+          text: `expense : ${expense.description}`,
+          createdAt: new Date(expense.createdAt),
+          user: {
+            _id: expense.paiby,
+            avatar: "https://placeimg.com/140/140/any",
+          },
+        };
+      });
+
+      // Append the fetched chat messages to the existing messages state
+      setMessages((prevMessages) => GiftedChat.append(prevMessages, chatMessages));
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    }
+  };
+
+  const [showModal, setShowModal] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   const handelbackgroup = () => {
-    navigation.navigate('Group');
+    navigation.navigate("Group");
   };
-  
+
   const handleSearchToggle = () => {
     setShowSearch(!showSearch);
   };
@@ -47,20 +74,9 @@ console.log("users: ", users);
   const handleCancelSearch = () => {
     setSearchText("");
     setShowSearch(false);
-   // getdata();
-  // setMessages(messages);
+    // getdata();
+    // setMessages(messages);
   };
-
- /* useEffect(() => {
-    const hideTabBar = navigation.addListener("focus", () => {
-      console.log("focus");
-      navigation.setOptions({
-        tabBarStyle: { display: "none" },
-      });
-     
-    });
-    return hideTabBar;
-  }, [navigation]);*/
 
   const openModal = () => {
     setShowModal(true);
@@ -71,39 +87,7 @@ console.log("users: ", users);
     setShowModal(false);
   };
 
-  const handleAddExpense = () => {
-    const expense = {
-      category,
-      productName,
-      productPrice,
-    };
-    setExpenses([...expenses, expense]);
-    setCategory("");
-    setProductName("");
-    setProductPrice("");
-    closeModal();
-  
-    const newMessage = {
-      _id: `${messages.length + 1}-${new Date().getTime()}`,
-      text: `Item added: ${expense.category} - ${expense.productName} ($${expense.productPrice})`,
-      createdAt: new Date(),
-      user: {
-        _id: user.id,
-      },
-      idGroup: 1,
-      depencesName: '', 
-      categorie: '', 
-      price: '',
-    };
-    try {
-      const messagesRef = collection(database, 'depences'); // Replace 'messages' with your actual collection name
-      addDoc(messagesRef, newMessage);
-      console.log('Message added to Firebase');
-    } catch (error) {
-      console.error('Error adding message to Firebase:', error);
-    }
-    setMessages(prevMessages => GiftedChat.append(prevMessages, [newMessage]));
-  };
+  const handleAddExpense = () => {};
 
   const handleSearch = () => {
     // Perform search logic here using the searchText state
@@ -117,113 +101,132 @@ console.log("users: ", users);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.header} onPress={()=> navigation.navigate(DetailsGroup)}>
-      
+      <TouchableOpacity
+        style={styles.header}
+        onPress={() => navigation.navigate(DetailsGroup)}
+      >
         <View style={styles.leftHeader}>
           <TouchableOpacity onPress={handelbackgroup}>
-            <MaterialIcons style={styles.expenseDetails} name="keyboard-arrow-left" size={30} color="white" />
-          </TouchableOpacity>
-        <Image
-          style={styles.groupImage}
-          source={require('../../assets/my_pic.jpeg')}
-        />
-        <View>
-          {showSearch ? (
-            <TextInput
-              style={styles.searchInputText}
-              value={searchText}
-              onChangeText={setSearchText}
-              autoFocus={true}
-              onBlur={handleSearch} // Call handleSearch when input loses focus
-              onSubmitEditing={handleSearch} // Call handleSearch when enter is pressed
-              placeholder="Search" // i need to change the color of the placeholder
-              placeholderTextColor="white"
+            <MaterialIcons
+              style={styles.expenseDetails}
+              name="keyboard-arrow-left"
+              size={30}
+              color="white"
             />
+          </TouchableOpacity>
+          <Image
+            style={styles.groupImage}
+            source={require("../../assets/my_pic.jpeg")}
+          />
+          <View>
+            {showSearch ? (
+              <TextInput
+                style={styles.searchInputText}
+                value={searchText}
+                onChangeText={setSearchText}
+                autoFocus={true}
+                onBlur={handleSearch} // Call handleSearch when input loses focus
+                onSubmitEditing={handleSearch} // Call handleSearch when enter is pressed
+                placeholder="Search"
+                placeholderTextColor="white"
+              />
             ) : (
-                <React.Fragment>
-                  <Text style={styles.groupTitle}>Group Name</Text>
-                  <Text style={styles.groupMembers}>3 members</Text>
-                </React.Fragment>
-              )}
+              <React.Fragment>
+                <Text style={styles.groupTitle}>Group Name</Text>
+                <Text style={styles.groupMembers}>3 members</Text>
+              </React.Fragment>
+            )}
+          </View>
         </View>
-      </View>
-      
+
         <View style={styles.rightHeader}>
           {showSearch ? (
             <TouchableOpacity onPress={handleCancelSearch}>
               <MaterialIcons name="cancel" size={24} color="white" />
             </TouchableOpacity>
-           ) : (
-              <TouchableOpacity onPress={handleSearchToggle}>
-                <AntDesign name={showSearch ? "close" : "search1"} size={24} color="white" />
-              </TouchableOpacity>
-            )}
-              <TouchableOpacity>
-            <SimpleLineIcons name="options-vertical" size={24} color="white"  onPress={onSignOut}  />
+          ) : (
+            <TouchableOpacity onPress={handleSearchToggle}>
+              <AntDesign
+                name={showSearch ? "close" : "search1"}
+                size={24}
+                color="white"
+              />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity>
+            <SimpleLineIcons
+              name="options-vertical"
+              size={24}
+              color="white"
+             
+            />
           </TouchableOpacity>
         </View>
-        
       </TouchableOpacity>
       <View style={styles.conversation}>
-            
-            <ModalComponent
-        showModal={showModal}
-        closeModal={closeModal}
-        users={users}
-        selectedGroup={group}
-        handleAddExpense={handleAddExpense}
-      />
-            <GiftedChat
-  messages={messages} 
-  showUserAvatar={true}
-  onSend={(newMessage) => setMessages(GiftedChat.append(messages, newMessage))}
-  user={{
-    _id: user.id,
-    avatar: "https://placeimg.com/140/140/any",
-  }}
-  renderInputToolbar={() => (
-    <View style={styles.addButtonContainer}>
-      <TouchableOpacity style={styles.addButton} onPress={openModal}>
-        <MaterialIcons name="add-shopping-cart" size={30} color="white" />
-      </TouchableOpacity>
-    </View>
-  )}
-  renderBubble={(props) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          left: {
-            backgroundColor: '#ddddddf5', // Color for received messages
-          },
-          right: {
-            backgroundColor: '#FFCA27',// Color for sent messages        
-          },
-        }}
-      />
-    );
-  }}
-  renderSystemMessage={(props) => (
-    <SystemMessage
-      {...props}
-      containerStyle={{
-        backgroundColor: '#FBF9F7', // Color for system messages
-        borderRadius: 4,
-        padding: 5,
-      }}
-      textStyle={{
-        color: 'black',
-        fontWeight: 'bold',
-      }}
-
-    />
-  )}
-/>
-
-</View>
+        <ModalComponent
+          showModal={showModal}
+          closeModal={closeModal}
+          users={users}
+          selectedGroup={group}
+          handleAddExpense={handleAddExpense}
+        />
+        <GiftedChat
+          messages={messages}
+          showUserAvatar={true}
+          onSend={(newMessage) =>
+            setMessages((prevMessages) => GiftedChat.append(prevMessages, newMessage))
+          }
+          user={{
+            _id: user.id,
+            avatar: "https://placeimg.com/140/140/any",
+          }}
+          renderInputToolbar={() => (
+            <View style={styles.addButtonContainer}>
+              <TouchableOpacity style={styles.addButton} onPress={openModal}>
+                <MaterialIcons
+                  name="add-shopping-cart"
+                  size={30}
+                  color="white"
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+          renderBubble={(props) => {
+            return (
+              <Bubble
+                {...props}
+                wrapperStyle={{
+                  left: {
+                    backgroundColor: "#ddddddf5", // Color for received messages
+                  },
+                  right: {
+                    backgroundColor: "#FFCA27", // Color for sent messages
+                  },
+                }}
+              />
+            );
+          }}
+          renderSystemMessage={(props) => (
+            <SystemMessage
+              {...props}
+              containerStyle={{
+                backgroundColor: "#FBF9F7", // Color for system messages
+                borderRadius: 4,
+                padding: 5,
+              }}
+              textStyle={{
+                color: "black",
+                fontWeight: "bold",
+              }}
+            />
+          )}
+        />
+      </View>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
