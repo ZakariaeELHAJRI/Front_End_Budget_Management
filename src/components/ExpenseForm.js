@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Button,TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Checkbox from './Checkbox';
+import axios from 'axios';
+import { AuthenticatedUserContext } from '../navigation/RootNavigator';
 
 const ExpenseForm = ({ group, users }) => {
   const [description, setDescription] = useState('');
@@ -13,13 +15,32 @@ const ExpenseForm = ({ group, users }) => {
   const [productPrice, setProductPrice] = useState('');
   const [productBeneficiaries, setProductBeneficiaries] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const categories = [
-    { id: 1, title: 'Category 1', icon: 'icon1' },
-    { id: 2, title: 'Category 2', icon: 'icon2' },
-    { id: 3, title: 'Category 3', icon: 'icon3' },
-    { id: 4, title: 'Category 4', icon: 'icon4'}
-    // Add more categories as needed
-  ];
+  const [categories, setCategories] = useState([]);
+ const [descptionPrd, setDescptionPrd] = useState('');
+  const { user } = useContext(AuthenticatedUserContext);
+  const token = user.token;
+  const userId = user.id;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    console.log('group selected expense', group);
+    console.log('all users **********************', users);
+    console.log('all categories after **********************', categories);
+  }, []);
+
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`http://10.0.2.2:3000/expensetype/`, { headers });
+      console.log('all categories before **********************', response.data);
+      setCategories(response.data.expenetype);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
     console.log('Updated productBeneficiaries:', productBeneficiaries);
     console.log('back to list category:', selectedCategory);
@@ -35,7 +56,7 @@ const ExpenseForm = ({ group, users }) => {
       _id: Math.random().toString(),
       name: productName,
       price: productPrice,
-      description: '',
+      description: descptionPrd,
       image: '',
       category: selectedCategory, // Add the selected category here
       members: productBeneficiaries,
@@ -47,6 +68,7 @@ const ExpenseForm = ({ group, users }) => {
 
     setProductName('');
     setProductPrice('');
+    setDescptionPrd('');
     setProductBeneficiaries([]);
 
    //setShowProductModal(false); 
@@ -57,13 +79,13 @@ const ExpenseForm = ({ group, users }) => {
       description,
       amount,
       idGroup: group._id,
-      paiby: paidBy,
+      paiby: user.id,
       products,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    console.log(expense);
+    console.log("expense  details =========+> : "+JSON.stringify(expense));
     console.log(productBeneficiaries);
 
     setDescription('');
@@ -92,13 +114,14 @@ const handleBackToCategory = () => {
       />
 
       <Text>Paid by:</Text>
-      <Picker selectedValue={paidBy} onValueChange={(value) => setPaidBy(value)}>
-        <Picker.Item label="Select user " value="" />
-        {group.members.map((memberId) => {
-          const user = users.find((user) => user._id === memberId);
-          return <Picker.Item key={user._id} label={user.name} value={user._id} />;
-        })}
-      </Picker>
+    
+       <Picker selectedValue={paidBy} onValueChange={(value) => setPaidBy(value)}>
+      <Picker.Item label="Select user" value="" />
+      {users.map((user) => (
+        <Picker.Item key={user._id} label={user.name} value={user._id} />
+      ))}
+    </Picker>
+
 
       <Text>Products:</Text>
       {products.map((product) => (
@@ -119,15 +142,15 @@ const handleBackToCategory = () => {
               <View style={styles.categoryContainer}>
                 {categories.map((category) => (
                   <TouchableOpacity
-                    key={category.id}
+                    key={category._id}
                     style={[
                       styles.categoryCard,
-                      selectedCategory === category.id && styles.selectedCategoryCard,
+                      selectedCategory === category._id && styles.selectedCategoryCard,
                     ]}
-                    onPress={() => setSelectedCategory(category.id)}
+                    onPress={() => setSelectedCategory(category._id)}
                   >
                     {/* Render the category icon and title */}
-                    <Text>{category.title}</Text>
+                    <Text>{category.name}</Text>
                   </TouchableOpacity>
                 ))}
                   <TouchableOpacity onPress={handelCancelCategory}  style={styles.btnModel}>
@@ -146,10 +169,11 @@ const handleBackToCategory = () => {
             onChangeText={(text) => setProductPrice(text)}
             keyboardType="numeric"
           />
+          <Text>Product Description:</Text>
+          <TextInput style={styles.input} value={descptionPrd} onChangeText={(text) => setDescptionPrd(text)} />
 
           <Text>Beneficiaries:</Text>
-          {group.members.map((memberId) => {
-            const user = users.find((user) => user._id === memberId);
+        {users.map((user) => {
             return (
               <Checkbox
                 key={user._id}
@@ -160,7 +184,7 @@ const handleBackToCategory = () => {
                     if (isChecked) {
                       const updatedBeneficiaries = [...prev, user._id];
                       console.log('user includes:', updatedBeneficiaries);
-                      console.log('user includes :', productBeneficiaries);
+                      console.log('user includes:', productBeneficiaries);
                       return updatedBeneficiaries;
                     } else {
                       const updatedBeneficiaries = prev.filter((id) => id !== user._id);
@@ -172,6 +196,7 @@ const handleBackToCategory = () => {
               />
             );
           })}
+          
        <TouchableOpacity onPress={handleAddProductSubmit}  style={styles.btnModel}>
       <Text style={styles.btnModelText}>Add Product</Text>
       </TouchableOpacity>

@@ -22,7 +22,7 @@ export default function Card({ title, date, members, balance }) {
   };
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate(ChatGroup)}>
+    
       <View style={styles.groupBox}>
         <View style={styles.imagecontainer}>
           <Image
@@ -47,7 +47,7 @@ export default function Card({ title, date, members, balance }) {
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+   
   );
 }
 const styles = StyleSheet.create({

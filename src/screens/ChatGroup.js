@@ -14,12 +14,16 @@ const onSignOut = () => {
   signOut(auth).catch(error => console.log('Error logging out: ', error));
 };
 
-export default function ChatGroup({ navigation }) {
+export default function ChatGroup({ navigation ,route  }) {
   const { user } = useContext(AuthenticatedUserContext);
   console.log("current user "+ user.id);
   const [messages, setMessages] = useState([]);
+ const { group } = route.params;
+  const users = group.usersInfo;
   useEffect(() => {
-    
+    console.log("current group info: ", JSON.stringify(group));
+   
+console.log("users: ", users);
   }, []);
   const [showModal, setShowModal] = useState(false);
   const [category, setCategory] = useState("");
@@ -29,69 +33,8 @@ export default function ChatGroup({ navigation }) {
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
-  const groups =[
-    {
-      "_id": "1",
-      "name": "Group 1",
-      "balance": 1000,
-      "members": ["1", "2", "3"],
-      "expenses": ["1", "2", "3"],
-      "reimbursement": ["1"],
-      "createdAt": "2023-05-30T10:00:00.000Z",
-      "updatedAt": "2023-05-30T10:00:00.000Z"
-    },
-    {
-      "_id": "2",
-      "name": "Group 2",
-      "balance": 500,
-      "members": ["1", "3"],
-      "expenses": ["2"],
-      "reimbursement": [],
-      "createdAt": "2023-05-29T15:30:00.000Z",
-      "updatedAt": "2023-05-29T15:30:00.000Z"
-    },
-    {
-      "_id": "3",
-      "name": "Group 3",
-      "balance": 1500,
-      "members": ["2", "3"],
-      "expenses": ["1", "3"],
-      "reimbursement": ["1"],
-      "createdAt": "2023-05-28T09:45:00.000Z",
-      "updatedAt": "2023-05-28T09:45:00.000Z"
-    }
-  ]
-  const selectedGroup = groups[0];
-  console.log(selectedGroup.members);
-  const users = [
-    {
-      "_id": "1",
-      "name": "User 1",
-      "email": "user1@example.com",
-      "password": "password1",
-      "phone": "1234567890",
-      "createdAt": "2023-05-30T10:00:00.000Z",
-      "updatedAt": "2023-05-30T10:00:00.000Z"
-    },
-    {
-      "_id": "2",
-      "name": "User 2",
-      "email": "user2@example.com",
-      "password": "password2",
-      "phone": "9876543210",
-      "createdAt": "2023-05-29T15:30:00.000Z",
-      "updatedAt": "2023-05-29T15:30:00.000Z"
-    },
-    {
-      "_id": "3",
-      "name": "User 3",
-      "email": "user3@example.com",
-      "password": "password3",
-      "phone": "5555555555",
-      "createdAt": "2023-05-28T09:45:00.000Z",
-      "updatedAt": "2023-05-28T09:45:00.000Z"
-    }
-  ];
+// map from group.usersInfo[]
+
 
   const handelbackgroup = () => {
     navigation.navigate('Group');
@@ -227,7 +170,7 @@ export default function ChatGroup({ navigation }) {
         showModal={showModal}
         closeModal={closeModal}
         users={users}
-        selectedGroup={selectedGroup}
+        selectedGroup={group}
         handleAddExpense={handleAddExpense}
       />
             <GiftedChat

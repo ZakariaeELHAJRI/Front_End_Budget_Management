@@ -1,7 +1,8 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState,useEffect} from 'react';
 import { View, Text , StyleSheet ,Image , FlatList ,TouchableOpacity } from 'react-native';
 import {FontAwesome5  ,SimpleLineIcons ,Feather , EvilIcons ,AntDesign ,MaterialCommunityIcons ,MaterialIcons ,Ionicons } from '@expo/vector-icons';
 import ExpenseCard from './../components/ExpencesCard';
+import axios from 'axios';
 import {AuthenticatedUserContext} from '../navigation/RootNavigator';
 
 const expenses = [
@@ -15,8 +16,31 @@ const expenses = [
   // Add more expense items as needed
 ];
 const HomeScreen = () => {
+const [userData, setUserData] = useState(null);
 const sliceColor = ['#fdaf00', '#fd336b', '#00cdc0', '#fd336b', '#00cdc0'];
-const {logout} = useContext(AuthenticatedUserContext);
+const {logout,user} = useContext(AuthenticatedUserContext);
+const token = user.token;
+const userId = user.id;
+const headers = {
+  Authorization: `Bearer ${token}`,
+};
+useEffect(() => {
+  console.log('' , 'useEffect');
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://10.0.2.2:3000/auth/${userId}`, { headers });
+      setUserData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchData();
+}, []);
+if (!userData) {
+  return null; // Render loading state or placeholder if data is not yet fetched
+}
+const { name, balance } = userData;
   return (
     <View style={styles.container}> 
     <View style = {styles.body}>
@@ -37,7 +61,7 @@ const {logout} = useContext(AuthenticatedUserContext);
     <Image source = {require('../../assets/my_pic.jpeg')} style = {styles.img}/>
     <View style = {styles.details}>
 
-    <Text style = {styles.cardText}>E.Zakariae</Text>
+    <Text style = {styles.cardText}>{name}</Text>
     <Text style = {styles.cardProfession}>Computer Engineer</Text>
     </View>
     </View>
@@ -64,7 +88,7 @@ const {logout} = useContext(AuthenticatedUserContext);
     <View style = {styles.details}>
 
     <Text style = {styles.balanceText}>Total Balance</Text>
-    <Text style = {styles.balanceAmount}>$ 564.00</Text>
+    <Text style = {styles.balanceAmount}>$ {balance} </Text>
 
     </View>
     <View style = {styles.solde}>

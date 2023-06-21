@@ -9,6 +9,7 @@ import axios from 'axios';
 import { AuthenticatedUserContext } from "../navigation/RootNavigator";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { async } from '@firebase/util';
+import { set } from 'react-native-reanimated';
 
 
 
@@ -19,10 +20,10 @@ const GroupScreen = ({ navigation }) => {
 
     
   const [data, setData] = useState([]);
- // const [token, setToken] = useState(null);
- // const [userId, setUserId] = useState(null);
+
   const [isViewVisible, setViewVisibility] = useState(false);
   const [users, setUsers] = useState([]);
+  const [groupSelected, setGroupSelected] = useState([]);
   const token = user.token;
   const userId = user.id;
   console.log('token session', token);
@@ -32,15 +33,6 @@ const GroupScreen = ({ navigation }) => {
       Authorization: `Bearer ${token}`,
     };
   useEffect(() => {
-   /* const fetchTokenID = async () => {
-     const tok = await  AsyncStorage.getItem('token');
-     const user =  await AsyncStorage.getItem('user');
-     setToken(tok);
-     setUserId(user);
-     
-    };
-    fetchTokenID();*/
- 
     fetchData();
     fetchUsers();
   }, []);
@@ -65,14 +57,19 @@ const GroupScreen = ({ navigation }) => {
 
   };
 
+
   const handlePress = () => {     
           setViewVisibility(!isViewVisible);
           console.log('users passed ======', users);
   };
 
-  const goToChatGroup = () => {
-    navigation.navigate('ChatGroup');
+  const goToChatGroup = (group) => {
+  const specificGroup = data.find((item) => item._id === group._id);
+    setGroupSelected(specificGroup); 
+    navigation.navigate('ChatGroup', {group : specificGroup });
+    console.log('group selected', group);
   };
+  
 
   return (
     <View style={{ flex: 1 }}>
@@ -87,7 +84,7 @@ const GroupScreen = ({ navigation }) => {
       <FlatList
         data={data}
         renderItem={({ item: group }) => (
-          <TouchableOpacity onPress={goToChatGroup}>
+          <TouchableOpacity onPress={() => goToChatGroup(group)}>
             <Card
               title={group.name}
               date={group.createdAt}
