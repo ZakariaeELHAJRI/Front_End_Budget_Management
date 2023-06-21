@@ -5,6 +5,7 @@ import Checkbox from './Checkbox';
 import axios from 'axios';
 import { AuthenticatedUserContext } from '../navigation/RootNavigator';
 import { set } from 'react-native-reanimated';
+import io from 'socket.io-client';
 
 const ExpenseForm = ({ group, users }) => {
   const [description, setDescription] = useState('');
@@ -32,6 +33,26 @@ const ExpenseForm = ({ group, users }) => {
     console.log('group selected expense', group);
     console.log('all users **********************', users);
     console.log('all categories after **********************', categories);
+
+    // Connect to the socket server
+    const socket = io('http://10.0.2.2:3000');
+
+    // Listen for the 'expensesUpdated' event
+    socket.on('expensesUpdated', (updatedExpenses) => {
+      // Filter the updated expenses based on the group
+      const filteredExpenses = updatedExpenses.filter((expense) => expense.Group === group._id);
+
+      // Update the products state with the filtered expenses' products
+      const updatedProducts = filteredExpenses.reduce((acc, curr) => {
+        return acc.concat(curr.products);
+      }, []);
+      setProducts(updatedProducts);
+    });
+
+    // Clean up the socket connection
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const fetchCategories = async () => {
@@ -74,9 +95,9 @@ const ExpenseForm = ({ group, users }) => {
 
   const handleAddExpense = async (data) => {
     try {
-      console.log('expense to add', data);
+      console.log('expense to added to database', data);
       const response = await axios.post('http://10.0.2.2:3000/service/createExpenseWithProducts', data, { headers });
-      console.log('expense added', response.data);
+      console.log('response data ', response.data);
     } catch (error) {
       console.error(error);
     }
@@ -91,14 +112,14 @@ const ExpenseForm = ({ group, users }) => {
       products,
     };
 
-    console.log("expense  details =========+> : "+JSON.stringify(expenseData));
+    console.log("expense  details =========+> : " + JSON.stringify(expenseData));
     setExpense(expenseData);
 
     if (description === '' || amount === '' || products.length === 0) {
       console.log('Please fill all the fields');
     } else {
-       handleAddExpense(expenseData);
-      console.log('expense added', expenseData);
+      handleAddExpense(expenseData);
+      console.log('expense added final', expenseData);
     }
     console.log(productBeneficiaries);
 
@@ -107,14 +128,17 @@ const ExpenseForm = ({ group, users }) => {
     setPaidBy('');
     setProducts([]);
   };
-  handelCancelCategory = () => {  
+
+  const handelCancelCategory = () => {
     setSelectedCategory(null);
     setShowProductModal(false);
-    };
-const handleBackToCategory = () => {
+  };
+
+  const handleBackToCategory = () => {
     setSelectedCategory(null);
     //setShowProductModal(false);
-    };
+  };
+
   return (
     <View>
       <Text>Description:</Text>
@@ -127,32 +151,22 @@ const handleBackToCategory = () => {
         keyboardType="numeric"
       />
 
-      {/* <Text>Paid by:</Text>
-    
-       <Picker selectedValue={paidBy} onValueChange={(value) => setPaidBy(value)}>
-      <Picker.Item label="Select user" value="" />
-      {users.map((user) => (
-        <Picker.Item key={user._id} label={user.name} value={user._id} />
-      ))}
-    </Picker>
-    */} 
-
       <Text>Products:</Text>
       {products.map((product) => (
         <Text key={product._id}>{product.name}</Text>
       ))}
-      <TouchableOpacity onPress={handleAddProduct}  style={styles.btnModel}>
-      <Text style={styles.btnModelText}>Add Product</Text>
+      <TouchableOpacity onPress={handleAddProduct} style={styles.btnModel}>
+        <Text style={styles.btnModelText}>Add Product</Text>
       </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSubmit}  style={styles.btnModel}>
+      <TouchableOpacity onPress={handleSubmit} style={styles.btnModel}>
         <Text style={styles.btnModelText}>Add Expences</Text>
       </TouchableOpacity>
 
       <Modal visible={showProductModal} transparent>
-      <View style={styles.modalContainer}>
+        <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-      {selectedCategory === null ? (
+            {selectedCategory === null ? (
               <View style={styles.categoryContainer}>
                 {categories.map((category) => (
                   <TouchableOpacity
@@ -167,63 +181,65 @@ const handleBackToCategory = () => {
                     <Text>{category.name}</Text>
                   </TouchableOpacity>
                 ))}
-                  <TouchableOpacity onPress={handelCancelCategory}  style={styles.btnModel}>
-                <Text style={styles.btnModelText}>Cancel</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={handelCancelCategory} style={styles.btnModel}>
+                  <Text style={styles.btnModelText}>Cancel</Text>
+                </TouchableOpacity>
               </View>
             ) : (
-        <View>
-          <Text>Product Name:</Text>
-          <TextInput style={styles.input} value={productName} onChangeText={(text) => setProductName(text)} />
-          {console.log('product is ', products)}
-          <Text>Product Price:</Text>
-          <TextInput
-          style={styles.input}
-            value={productPrice}
-            onChangeText={(text) => setProductPrice(text)}
-            keyboardType="numeric"
-          />
-          <Text>Product Description:</Text>
-          <TextInput style={styles.input} value={descptionPrd} onChangeText={(text) => setDescptionPrd(text)} />
+              <View>
+                <Text>Product Name:</Text>
+                <TextInput style={styles.input} value={productName} onChangeText={(text) => setProductName(text)} />
 
-          <Text>Beneficiaries:</Text>
-        {users.map((user) => {
-            return (
-              <Checkbox
-                key={user._id}
-                title={user.name}
-                isChecked={productBeneficiaries.includes(user._id)}
-                onPress={(isChecked) => {
-                  setProductBeneficiaries((prev) => {
-                    if (isChecked) {
-                      const updatedBeneficiaries = [...prev, user._id];
-                      console.log('user includes:', updatedBeneficiaries);
-                      console.log('user includes:', productBeneficiaries);
-                      return updatedBeneficiaries;
-                    } else {
-                      const updatedBeneficiaries = prev.filter((id) => id !== user._id);
-                      console.log('user includes - excludes:', updatedBeneficiaries);
-                      return updatedBeneficiaries;
-                    }
-                  });
-                }}
-              />
-            );
-          })}
-          
-       <TouchableOpacity onPress={handleAddProductSubmit}  style={styles.btnModel}>
-      <Text style={styles.btnModelText}>Add Product</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleBackToCategory}  style={styles.btnModel}>
-      <Text style={styles.btnModelText}>Back to Categorys</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => setShowProductModal(false)} style={styles.btnModel}>
-      <Text style={styles.btnModelText}>Finish</Text>
-      </TouchableOpacity>
-          
-        </View>
-        )}
-        </View>
+                <Text>Product Price:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={productPrice}
+                  onChangeText={(text) => setProductPrice(text)}
+                  keyboardType="numeric"
+                />
+
+                <Text>Product Description:</Text>
+                <TextInput style={styles.input} value={descptionPrd} onChangeText={(text) => setDescptionPrd(text)} />
+
+                <Text>Beneficiaries:</Text>
+                {users.map((user) => {
+                  return (
+                    <Checkbox
+                      key={user._id}
+                      title={user.name}
+                      isChecked={productBeneficiaries.includes(user._id)}
+                      onPress={(isChecked) => {
+                        setProductBeneficiaries((prev) => {
+                          if (isChecked) {
+                            const updatedBeneficiaries = [...prev, user._id];
+                            console.log('user includes:', updatedBeneficiaries);
+                            console.log('user includes:', productBeneficiaries);
+                            return updatedBeneficiaries;
+                          } else {
+                            const updatedBeneficiaries = prev.filter((id) => id !== user._id);
+                            console.log('user includes - excludes:', updatedBeneficiaries);
+                            return updatedBeneficiaries;
+                          }
+                        });
+                      }}
+                    />
+                  );
+                })}
+
+                <TouchableOpacity onPress={handleAddProductSubmit} style={styles.btnModel}>
+                  <Text style={styles.btnModelText}>Add Product</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleBackToCategory} style={styles.btnModel}>
+                  <Text style={styles.btnModelText}>Back to Categories</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => setShowProductModal(false)} style={styles.btnModel}>
+                  <Text style={styles.btnModelText}>Finish</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
       </Modal>
     </View>
@@ -231,53 +247,54 @@ const handleBackToCategory = () => {
 };
 
 export default ExpenseForm;
+
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      },
-      modalContent: {
-        position : 'absolute',
-        width: "80%",
-        backgroundColor: "#fff",
-        padding: 20,
-        borderRadius: 8,
-      },
-      categoryContainer: {
-        position: 'relative',
-        marginBottom: 20,
-        flexDirection: 'column',
-      },
-      categoryCard: {
-        borderWidth: 1,
-        borderColor: 'gray',
-        padding: 10,
-        marginBottom: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 50,
-      },
-        input: {
-        borderWidth: 1,
-        borderColor: 'gray',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 8,
-        },
-        btnModel: {
-        backgroundColor: '#f57c00',
-        padding: 10,
-        borderRadius: 8,
-        marginTop: 10,
-        },
-        btnModelText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        },
-        selectedCategoryCard: {
-        backgroundColor: '#f57c00',
-        },
-        });
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    position: 'absolute',
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 8,
+  },
+  categoryContainer: {
+    position: 'relative',
+    marginBottom: 20,
+    flexDirection: 'column',
+  },
+  categoryCard: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  btnModel: {
+    backgroundColor: '#f57c00',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  btnModelText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  selectedCategoryCard: {
+    backgroundColor: '#f57c00',
+  },
+});

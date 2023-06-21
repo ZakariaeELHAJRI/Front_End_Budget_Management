@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { AntDesign, SimpleLineIcons, MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
+import { io } from 'socket.io-client';
 
 import ModalComponent from "../components/ModelExpences";
 import { AuthenticatedUserContext } from "../navigation/RootNavigator";
@@ -24,18 +25,27 @@ export default function ChatGroup({ navigation, route }) {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  const socket = io('http://10.0.2.2:3000'); // Replace with your server URL
+
   useEffect(() => {
     console.log("current group info: ", JSON.stringify(group));
     console.log("users: ", users);
 
     // Fetch expenses from MongoDB database
     fetchExpenses();
+
+    socket.on('expensesUpdated', handleExpenseAdded);
+
+    return () => {
+      socket.off('expensesUpdated', handleExpenseAdded);
+    };
   }, []);
 
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get(`http://10.0.2.2:3000/expense`, { headers});
-      const expenses = response.data.filter((expense) => expense.Group === group._id)
+      const response = await axios.get(`http://10.0.2.2:3000/expense`, { headers });
+      const expenses = response.data.filter((expense) => expense.Group === group._id);
       console.log("Expenses: ", expenses);
 
       // Convert expenses to chat messages format
@@ -57,6 +67,22 @@ export default function ChatGroup({ navigation, route }) {
     } catch (error) {
       console.error("Error fetching expenses:", error);
     }
+  };
+
+  const handleExpenseAdded = (expense) => {
+    // Convert the received expense to a chat message format
+    const chatMessage = {
+      _id: expense._id,
+      text: `expense : ${expense.description}`,
+      createdAt: new Date(expense.createdAt),
+      user: {
+        _id: expense.paidBy,
+        avatar: "https://placeimg.com/140/140/any",
+      },
+    };
+
+    // Append the new chat message to the existing messages state
+    setMessages((prevMessages) => GiftedChat.append(prevMessages, [chatMessage]));
   };
 
   const [showModal, setShowModal] = useState(false);
@@ -87,7 +113,17 @@ export default function ChatGroup({ navigation, route }) {
     setShowModal(false);
   };
 
-  const handleAddExpense = () => {};
+  const handleAddExpense = async (expense) => {
+    try {
+      // Send the new expense to the server
+      await axios.post('http://10.0.2.2:3000/expense', expense, { headers });
+
+      // Emit the `expenseAdded` event to notify other clients
+      socket.emit('expenseAdded', expense);
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
+  };
 
   const handleSearch = () => {
     // Perform search logic here using the searchText state
@@ -197,36 +233,30 @@ export default function ChatGroup({ navigation, route }) {
               <Bubble
                 {...props}
                 wrapperStyle={{
-                  left: {
-                    backgroundColor: "#ddddddf5", // Color for received messages
-                  },
                   right: {
-                    backgroundColor: "#FFCA27", // Color for sent messages
+                    backgroundColor: "#3370d4",
+                  },
+                  left: {
+                    backgroundColor: "#ccc",
                   },
                 }}
               />
             );
           }}
-          renderSystemMessage={(props) => (
-            <SystemMessage
-              {...props}
-              containerStyle={{
-                backgroundColor: "#FBF9F7", // Color for system messages
-                borderRadius: 4,
-                padding: 5,
-              }}
-              textStyle={{
-                color: "black",
-                fontWeight: "bold",
-              }}
-            />
-          )}
+          renderSystemMessage={(props) => {
+            return (
+              <SystemMessage
+                {...props}
+                textStyle={{ color: "white" }}
+                wrapperStyle={{ backgroundColor: "#ccc" }}
+              />
+            );
+          }}
         />
       </View>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
